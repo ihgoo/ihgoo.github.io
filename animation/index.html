@@ -1,0 +1,818 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="动画概述Android为动画效果提供了一个强大多样化的Api，你可以根据你需要的来选择。
+AnimationAndroid框架层提供了两种动画系统：View Animation和Property Animation(Android3.0引入),除了属性动画以外动画系统都需要提前配置，通常使用的时候先要声明参数及方法，因为它很灵活，且提供了很多特性。除了以上两种动画系统之外，你还可以使用Drawab">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android动画之属性动画">
+<meta property="og:url" content="http://ihgoo.github.io/animation/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="动画概述Android为动画效果提供了一个强大多样化的Api，你可以根据你需要的来选择。
+AnimationAndroid框架层提供了两种动画系统：View Animation和Property Animation(Android3.0引入),除了属性动画以外动画系统都需要提前配置，通常使用的时候先要声明参数及方法，因为它很灵活，且提供了很多特性。除了以上两种动画系统之外，你还可以使用Drawab">
+<meta property="og:image" content="http://ihgoo.qiniudn.com/animation-linear.png">
+<meta property="og:image" content="http://ihgoo.qiniudn.com/animation-nonlinear.png">
+<meta property="og:image" content="http://ihgoo.qiniudn.com/valueanimator.png">
+<meta property="og:updated_time" content="2015-05-26T00:32:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android动画之属性动画">
+<meta name="twitter:description" content="动画概述Android为动画效果提供了一个强大多样化的Api，你可以根据你需要的来选择。
+AnimationAndroid框架层提供了两种动画系统：View Animation和Property Animation(Android3.0引入),除了属性动画以外动画系统都需要提前配置，通常使用的时候先要声明参数及方法，因为它很灵活，且提供了很多特性。除了以上两种动画系统之外，你还可以使用Drawab">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Android动画之属性动画 | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android动画之属性动画
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-05-04T13:34:27+08:00" content="May 4 2015">
+              May 4 2015
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/animation/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="animation/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="动画概述">动画概述</h3><p>Android为动画效果提供了一个强大多样化的Api，你可以根据你需要的来选择。</p>
+<h2 id="Animation">Animation</h2><p>Android框架层提供了两种动画系统：View Animation和Property Animation(Android3.0引入),除了属性动画以外动画系统都需要提前配置，通常使用的时候先要声明参数及方法，因为它很灵活，且提供了很多特性。除了以上两种动画系统之外，你还可以使用Drawable Animation，通过加载一连串图片来实现一些复杂动画。<br><a id="more"></a></p>
+<ul>
+<li><p>PropertyAnimation<br>  在Android 3.0(API level11),这套系统可以使任意对象的任意属性进行动画变换，即便这个对象不在屏幕上面，这套系统可以让你的自定义动画达到极致。</p>
+</li>
+<li><p>ViewAnimation<br>  视图动画是一套旧的系统且只能被应用在View上面的动画。它相对容易去实现，能满足大部分app的需要。</p>
+</li>
+<li><p>DrawableAnimation<br>  帧动画像胶片电影一样，用一个接一个的显示drawable资源来达到动画的效果，这种动画实现起来很简单，缺点是播放这种动画消耗系统资源较多。</p>
+</li>
+</ul>
+<h2 id="Property_Animation">Property Animation</h2><p>属性动画系统可以让你为动画定义以下属性</p>
+<ul>
+<li><p>Duration<br>为动画设置持续时间，默认为300毫秒</p>
+</li>
+<li><p>Time interpolation<br>时间插值，可以定义随着时间的改变，属性也进行改变。</p>
+</li>
+<li><p>Repeat count and behavior<br>重复的次数</p>
+</li>
+<li><p>Animator sets<br>动画集合，可以设置顺序执行动画，也可以同时执行动画</p>
+</li>
+<li><p>Frame refresh delay<br>帧刷新的时间，默认为10ms/帧</p>
+</li>
+</ul>
+<h2 id="Property_Animation是如何工作的">Property Animation是如何工作的</h2><p>首先，用一个简单的例子来说明动画是如何工作的：</p>
+<ul>
+<li>线性动画</li>
+</ul>
+<p><img src="http://ihgoo.qiniudn.com/animation-linear.png" alt=""></p>
+<p>一个物体以1ms 1单位长度的速度前进，共前进40ms。</p>
+<ul>
+<li>非线性动画</li>
+</ul>
+<p><img src="http://ihgoo.qiniudn.com/animation-nonlinear.png" alt=""></p>
+<p>一个物体先加速后减速，共前进40ms。</p>
+<ul>
+<li>动画是如何计算的</li>
+</ul>
+<p>以上两种动画用属性动画都可以用属性动画来实现，每个物体拥有自己的速度属性，根据速度属性不同，前进的距离、速率也不同，实现的动画自然也就不同了，下面看具体的详解图：</p>
+<p><img src="http://ihgoo.qiniudn.com/valueanimator.png" alt=""></p>
+<ul>
+<li>ValueAnimation对象持续跟踪animation的时间点，如animation运行了多长时间，属性的当前值。</li>
+<li>ValueAnimator封装了一个TimeInterpolator，TimeInterpolator定义了animation是如何插值的。<br>ValueAnimator也封装了一个TypeEvaluator，TypeEvaluator定义了如何计算属性的值。<br>在例子2中，TimeInterpolator使用的是先快后慢的插值器，TypeEvaluator使用的是IntEvaluator。</li>
+<li>创建了一个ValueAnimator并为ValueAnimator注入animation的开始值，结束值，持续时间，调用start();方法来启动这个动画。</li>
+<li>在Animation的整个运行过程中，ValueAnimator会基于动画运行的时间计算出一个0-1的值，这个值被称为elapsed fraction。如场景一t=10ms的时刻，elapsed fraction的值为0.25，因为整个动画的运行时间是40ms，所以elapsed fraction=10/40。</li>
+<li>在ValueAnimator完成elapsed fraction的计算之后，它会调用TimeInterpolator去计算interpolated fraction的值。interpolated fraction会根据elapsed fraction的值来计算。例如，在场景二中，由于是缓慢加速的原因，在t=10ms的时刻，interpolated fraction的值为0.15，会小于elapsed fraction的值0.25。而在场景一中，由于是匀速的关系，interpolated fraction的值会永远与elapsed fraction的值一样的。</li>
+<li>在ValueAnimator完成elapsed fraction的计算之后，它会调用合适的TypeEvaluator去计算属性的当前时刻的值，这个计算过程是基于interpolated fraction的值、starting value和ending value。例如，在场景二t=10ms的时刻点，interpolated fraction的值为0.15，因此属性x的值便会是0.15X(40-0)=6.</li>
+</ul>
+<h2 id="ValueAnimator">ValueAnimator</h2><p>ValueAnimator是属性动画的核心类，它可以设置动画持久时间，开始结束的属性值，相应时间属性值计算方法。</p>
+<pre><code>ValueAnimator anim= ValueAnimator.ofInt(0, 40)<span class="comment">;  </span>
+animation.setDuration(40)<span class="comment">;  </span>
+animation.start()<span class="comment">; </span>
+</code></pre><p>然后通过ValueAnimator的AnimatorUpdateListener可以得到动画执行每一帧所返回的值,</p>
+<pre><code>anim.addUpdateListener(<span class="keyword">new</span> AnimatorUpdateListener() {  
+    <span class="annotation">@Override</span>  
+        <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onAnimationUpdate</span><span class="params">(ValueAnimator animation)</span> </span>{  
+                <span class="comment">//frameValue是通过startValue和endValue以及Fraction计算出来的  </span>
+            <span class="keyword">int</span> frameValue = (Integer)animation.getAnimatedValue();  
+        <span class="comment">//利用每一帧返回的值，可以做一些改变View大小，坐标，透明度等等操作  </span>
+    }  
+});  
+</code></pre><h2 id="ObjectAnimator">ObjectAnimator</h2><p>ObjectAnimator<br>而ObjectAnimator是继承于ValueAnimator的，ObjectAnimator与ValueAnimator的不同区别在于不需要自己实现AnimatorUpdateLinstener接口来改变物体的状态的移动。</p>
+<p>ObjectAnimator可以设置一个物体的动画属性值，然后提供该值的get/set方法，在动画一开始的时候，该动画会通过反射的方法得到/设置该值。</p>
+<h2 id="AnimatiorSet">AnimatiorSet</h2><p>AnimatiorSet顾名思义就是几个动画的集合，这些动画可以一起执行，也可以顺序执行。<br>执行playTogether(Animator… items)或playTogether(Collection<animator> items)方法来一起执行这些动画。<br>执行playSequentially(Animator… items)或playSequentially(List<animator> items)方法来顺序执行这些动画。</animator></animator></p>
+<h2 id="Interpolator">Interpolator</h2><p>Interpolator作为动画的插值器，动画是如何变化的，都是通过插值器来决定的。</p>
+<ul>
+<li>AccelerateDecelerateInterpolator 先加速后减速</li>
+<li>AccelerateInterpolator 加速</li>
+<li>AnticipateInterpolator </li>
+<li>AnticipateOvershootInterpolator 回荡秋千插值器</li>
+<li>BounceInterpolator 弹跳插值器</li>
+<li>CycleInterpolator 速率根据正弦曲线改变</li>
+<li>DecelerateInterpolator 减速</li>
+<li>LinearInterpolator 线性速度(匀速)</li>
+<li>OvershootInterpolator </li>
+</ul>
+<p>系统提供的插值器可以方便使用，不需要自己写数学函数了，如果需求不仅仅于上面几种插值器，也可以自定义插值器来实现</p>
+<p>关于插值器的更多资料阅读  </p>
+<ul>
+<li><a href="http://my.oschina.net/banxi/blog/135633#OSC_h2_7" target="_blank" rel="external">简单插值器分析</a></li>
+<li><a href="http://www.cnblogs.com/boliu/archive/2013/09/02/3295944.html" target="_blank" rel="external">动画初步使用以及自定义插值器</a></li>
+</ul>
+<p>本文参考自<br><a href="http://www.androidcommunitydocs.com/guide/topics/graphics/prop-animation.html" target="_blank" rel="external">http://www.androidcommunitydocs.com/guide/topics/graphics/prop-animation.html</a><br><a href="http://blog.csdn.net/lmj623565791/article/details/38067475" target="_blank" rel="external">http://blog.csdn.net/lmj623565791/article/details/38067475</a></p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/ejabberd-1/" rel="next" title="ejabberd安装配置">
+                <i class="fa fa-chevron-left"></i> ejabberd安装配置
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/v2ex-android-client-1/" rel="prev" title="V2EX论坛客户端之帖子信息爬取(一)">
+                V2EX论坛客户端之帖子信息爬取(一) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="animation/"
+           data-title="Android动画之属性动画" data-url="http://ihgoo.github.io/animation/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#动画概述"><span class="nav-number">1.</span> <span class="nav-text">动画概述</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Animation"><span class="nav-number"></span> <span class="nav-text">Animation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Property_Animation"><span class="nav-number"></span> <span class="nav-text">Property Animation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Property_Animation是如何工作的"><span class="nav-number"></span> <span class="nav-text">Property Animation是如何工作的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ValueAnimator"><span class="nav-number"></span> <span class="nav-text">ValueAnimator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ObjectAnimator"><span class="nav-number"></span> <span class="nav-text">ObjectAnimator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AnimatiorSet"><span class="nav-number"></span> <span class="nav-text">AnimatiorSet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interpolator"><span class="nav-number"></span> <span class="nav-text">Interpolator</span></a></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

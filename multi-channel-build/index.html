@@ -1,0 +1,1218 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="前言国内应用市场繁多，原有方法打包耗时。从ant脚本打包-&amp;gt;gralde脚本打包-&amp;gt;jenkins打包-&amp;gt;修改apk meta文件夹批量打包-&amp;gt;向apk里插入摘要。经历了这么多种，终于找出来一种既快速又没有弊端的方法了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android多渠道打包方案探究">
+<meta property="og:url" content="http://ihgoo.github.io/multi-channel-build/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="前言国内应用市场繁多，原有方法打包耗时。从ant脚本打包-&amp;gt;gralde脚本打包-&amp;gt;jenkins打包-&amp;gt;修改apk meta文件夹批量打包-&amp;gt;向apk里插入摘要。经历了这么多种，终于找出来一种既快速又没有弊端的方法了。">
+<meta property="og:updated_time" content="2016-01-26T09:46:22.560Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android多渠道打包方案探究">
+<meta name="twitter:description" content="前言国内应用市场繁多，原有方法打包耗时。从ant脚本打包-&amp;gt;gralde脚本打包-&amp;gt;jenkins打包-&amp;gt;修改apk meta文件夹批量打包-&amp;gt;向apk里插入摘要。经历了这么多种，终于找出来一种既快速又没有弊端的方法了。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Android多渠道打包方案探究 | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android多渠道打包方案探究
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-01-19T18:23:04+08:00" content="Jan 19 2016">
+              Jan 19 2016
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/multi-channel-build/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="multi-channel-build/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言">前言</h3><p>国内应用市场繁多，原有方法打包耗时。从ant脚本打包-&gt;gralde脚本打包-&gt;jenkins打包-&gt;修改apk meta文件夹批量打包-&gt;向apk里插入摘要。<br>经历了这么多种，终于找出来一种既快速又没有弊端的方法了。<a id="more"></a></p>
+<h3 id="介绍几种方法的利弊">介绍几种方法的利弊</h3><ul>
+<li><p>ant 打包(eclipse时代)，现在早转androidstudio了，这个就不再提了。</p>
+</li>
+<li><p>gradle脚本打包<br>gradle脚本方式利用修改BuildConfig里的字段的方式，来区分各个渠道的，打包速度很慢，而且渠道多的话，as容易oom。</p>
+</li>
+<li><p>jenkins打包<br>jenkins打包打包也就是执行的gralde脚本，和上个方法一样，只不过把打包的过程移到server端了，jenkins打包适用于，每天定时自动打测试包，每次可以给最新的代码测试。</p>
+</li>
+<li><p>修改apk meta文件打包<br>解压apk文件，在Meta-inf目录创建一个以渠道号为文件名的空文件，再压缩回去。这个开始觉得可行的，于是写了个简单的php脚本：</p>
+</li>
+</ul>
+<pre><code><span class="comment">/**
+* $channel 渠道名称
+*/</span>
+<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">build</span><span class="params">(<span class="variable">$channel</span>)</span></span>{
+    <span class="variable">$apk</span>    = <span class="string">"1.apk"</span>;
+    <span class="variable">$result</span> = <span class="variable">$this</span>-&gt;cloneFile(<span class="variable">$apk</span>,<span class="variable">$channel</span>);
+    <span class="variable">$this</span>-&gt;output
+        -&gt;set_content_type(<span class="string">'application/json'</span>)
+        -&gt;set_output(json_encode(<span class="keyword">array</span>(<span class="string">'result'</span> =&gt; <span class="variable">$result</span>,<span class="string">'channel'</span> =&gt; <span class="variable">$channel</span>)));
+}
+
+
+<span class="comment">/*
+* $oldApkName 要备份的文件名称,$channel 渠道名称
+*/</span>
+<span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">cloneFile</span><span class="params">(<span class="variable">$oldApkName</span>,<span class="variable">$channel</span>)</span></span>{
+    <span class="variable">$channelApkName</span> = <span class="variable">$channel</span>.<span class="string">'.apk'</span>;
+    <span class="variable">$tempFile</span>   = tempnam(<span class="string">"tmp"</span>, <span class="string">"zip"</span>);
+    <span class="variable">$result</span> = <span class="string">'false'</span>;
+    <span class="keyword">if</span>(<span class="keyword">false</span>===file_put_contents(<span class="variable">$tempFile</span>, file_get_contents(<span class="variable">$oldApkName</span>))){
+        <span class="keyword">exit</span>(<span class="string">'copy faild!'</span>);
+    }<span class="keyword">else</span>{
+
+        <span class="variable">$time</span> = date(<span class="string">'y-m-d-h'</span>,time());
+
+        <span class="keyword">if</span>(!file_exists(<span class="variable">$time</span>)){
+            mkdir(<span class="variable">$time</span>);
+        }
+
+        <span class="variable">$zip</span>    = <span class="keyword">new</span> ZipArchive();
+        <span class="variable">$zip</span>-&gt;open(<span class="variable">$tempFile</span>); 
+        <span class="variable">$zip</span>-&gt;addFromString(<span class="string">'META-INF/channel_'</span>.<span class="variable">$channel</span>, <span class="string">""</span>);
+        <span class="variable">$zip</span>-&gt;close();
+
+
+        copy(<span class="variable">$tempFile</span>,<span class="variable">$time</span>.<span class="string">'/'</span>.<span class="variable">$channelApkName</span>);
+        unlink(<span class="variable">$tempFile</span>);
+        <span class="variable">$result</span> = <span class="string">'success'</span>;
+    }
+    <span class="keyword">return</span> <span class="variable">$result</span>;
+}
+</code></pre><p>发现打包速度非常快，但是有致命的兼容性问题，在android5.0以上，如果安装用此方法添加渠道的安装包，则会提示apk签名验证失败等字样。android5.0以下是没有问题的。</p>
+<ul>
+<li>把渠道信息写入APK文件的末尾<br>  这个方法不需要解压缩，直接向apk文件末尾处写数据就可以了。打包速度比上个方法还要快一些（因为少了解压缩和压缩的过程）。</li>
+</ul>
+<h3 id="原理探究">原理探究</h3><p>写：<br>apk文件打包好了之后，向apk文件的最末位处写入开始写入渠道的标记，再把渠道写到标记之后。这样apk的渠道已经写好了。</p>
+<p>读：<br>程序在启动的时候，直接找到apk的存储位置，读流的方式找到之前写的标记位，标记位之后就是渠道了，拿到渠道之后对这个数据做持久化处理就可以了（放sp或者sqlite里都可以），这样就不用每次都读渠道号啦。</p>
+<h3 id="代码实现">代码实现</h3><pre><code><span class="comment">/*
+ * Copyright (C) 2014 seven456@gmail.com
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+<span class="keyword">import</span> java.io.ByteArrayOutputStream;
+<span class="keyword">import</span> java.io.Closeable;
+<span class="keyword">import</span> java.io.File;
+<span class="keyword">import</span> java.io.FileInputStream;
+<span class="keyword">import</span> java.io.FileOutputStream;
+<span class="keyword">import</span> java.io.IOException;
+<span class="keyword">import</span> java.io.RandomAccessFile;
+<span class="keyword">import</span> java.nio.ByteBuffer;
+<span class="keyword">import</span> java.nio.ByteOrder;
+<span class="keyword">import</span> java.nio.channels.FileChannel;
+<span class="keyword">import</span> java.security.Key;
+<span class="keyword">import</span> java.util.Arrays;
+<span class="keyword">import</span> java.util.LinkedHashMap;
+<span class="keyword">import</span> java.util.Map;
+<span class="keyword">import</span> java.util.zip.ZipFile;
+
+<span class="keyword">import</span> javax.crypto.Cipher;
+<span class="keyword">import</span> javax.crypto.SecretKeyFactory;
+<span class="keyword">import</span> javax.crypto.spec.DESKeySpec;
+<span class="keyword">import</span> javax.crypto.spec.IvParameterSpec;
+
+<span class="comment">/**
+ * 多渠道打包工具；&lt;br/&gt;
+ * 利用的是Zip文件“可以添加comment（注释）”的数据结构特点，在文件的末尾写入任意数据，而不用重新解压zip文件（apk文件就是zip文件格式）；&lt;br/&gt;
+ * 创建时间： 2014-12-16 18:56:29
+ * <span class="doctag">@author</span> zhangguojun
+ * <span class="doctag">@version</span> 1.1
+ * <span class="doctag">@since</span> JDK1.6 Android2.2
+ */</span>
+<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MCPTool</span> </span>{
+    <span class="comment">/**
+     * 数据结构体的签名标记
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SIG = <span class="string">"MCPT"</span>;
+    <span class="comment">/**
+     * 数据结构的版本号
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String VERSION_1_1 = <span class="string">"1.1"</span>;
+    <span class="comment">/**
+     * 数据编码格式
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CHARSET_NAME = <span class="string">"UTF-8"</span>;
+    <span class="comment">/**
+     * 加密用的IvParameterSpec参数
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span>[] IV = <span class="keyword">new</span> <span class="keyword">byte</span>[] { <span class="number">1</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span> };
+
+    <span class="comment">/**
+     * 写入数据
+     * <span class="doctag">@param</span> path 文件路径
+     * <span class="doctag">@param</span> content 写入的内容
+     * <span class="doctag">@param</span> password 加密密钥
+     * <span class="doctag">@throws</span> Exception
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">write</span><span class="params">(File path, String content, String password)</span> <span class="keyword">throws</span> Exception </span>{
+        write(path, content.getBytes(CHARSET_NAME), password);
+    }
+
+    <span class="comment">/**
+     * 写入数据（如：渠道号）
+     * <span class="doctag">@param</span> path 文件路径
+     * <span class="doctag">@param</span> content 写入的内容
+     * <span class="doctag">@param</span> password 加密密钥
+     * <span class="doctag">@throws</span> Exception
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">write</span><span class="params">(File path, <span class="keyword">byte</span>[] content, String password)</span> <span class="keyword">throws</span> Exception </span>{
+        ZipFile zipFile = <span class="keyword">new</span> ZipFile(path);
+        <span class="keyword">boolean</span> isIncludeComment = zipFile.getComment() != <span class="keyword">null</span>;
+        zipFile.close();
+        <span class="keyword">if</span> (isIncludeComment) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Zip comment is exists, Repeated write is not recommended."</span>);
+        }
+
+        <span class="keyword">boolean</span> isEncrypt = password != <span class="keyword">null</span> &amp;&amp; password.length() &gt; <span class="number">0</span>;
+        <span class="keyword">byte</span>[] bytesContent = isEncrypt ? encrypt(password, content) : content;
+        <span class="keyword">byte</span>[] bytesVersion = VERSION_1_1.getBytes(CHARSET_NAME);
+        ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();
+        baos.write(bytesContent); <span class="comment">// 写入内容；</span>
+        baos.write(short2Stream((<span class="keyword">short</span>) bytesContent.length)); <span class="comment">// 写入内容长度；</span>
+        baos.write(isEncrypt ? <span class="number">1</span> : 0); <span class="comment">// 写入是否加密标示；</span>
+        baos.write(bytesVersion); <span class="comment">// 写入版本号；</span>
+        baos.write(short2Stream((<span class="keyword">short</span>) bytesVersion.length)); <span class="comment">// 写入版本号长度；</span>
+        baos.write(SIG.getBytes(CHARSET_NAME)); <span class="comment">// 写入SIG标记；</span>
+        <span class="keyword">byte</span>[] data = baos.toByteArray();
+        baos.close();
+        <span class="keyword">if</span> (data.length &gt; Short.MAX_VALUE) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Zip comment length &gt; 32767."</span>);
+        }
+
+        <span class="comment">// Zip文件末尾数据结构：{@see java.util.zip.ZipOutputStream.writeEND}</span>
+        RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(path, <span class="string">"rw"</span>);
+        raf.seek(path.length() - <span class="number">2</span>); <span class="comment">// comment长度是short类型</span>
+        raf.write(short2Stream((<span class="keyword">short</span>) data.length)); <span class="comment">// 重新写入comment长度，注意Android apk文件使用的是ByteOrder.LITTLE_ENDIAN（小端序）；</span>
+        raf.write(data);
+        raf.close();
+    }
+
+    <span class="comment">/**
+     * 读取数据
+     * <span class="doctag">@param</span> path 文件路径
+     * <span class="doctag">@param</span> password 解密密钥
+     * <span class="doctag">@return</span> 被该工具写入的数据（如：渠道号）
+     * <span class="doctag">@throws</span> Exception
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] read(File path, String password) <span class="keyword">throws</span> Exception {
+        <span class="keyword">byte</span>[] bytesContent = <span class="keyword">null</span>;
+        <span class="keyword">byte</span>[] bytesMagic = SIG.getBytes(CHARSET_NAME);
+        <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[bytesMagic.length];
+        RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(path, <span class="string">"r"</span>);
+        Object[] versions = getVersion(raf);
+        <span class="keyword">long</span> index = (<span class="keyword">long</span>) versions[<span class="number">0</span>];
+        String version = (String) versions[<span class="number">1</span>];
+        <span class="keyword">if</span> (VERSION_1_1.equals(version)) {
+            bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1</span>];
+            index -= bytes.length;
+            readFully(raf, index, bytes); <span class="comment">// 读取内容长度；</span>
+            <span class="keyword">boolean</span> isEncrypt = bytes[<span class="number">0</span>] == <span class="number">1</span>;
+
+            bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span>];
+            index -= bytes.length;
+            readFully(raf, index, bytes); <span class="comment">// 读取内容长度；</span>
+            <span class="keyword">int</span> lengthContent = stream2Short(bytes, <span class="number">0</span>);
+
+            bytesContent = <span class="keyword">new</span> <span class="keyword">byte</span>[lengthContent];
+            index -= lengthContent;
+            readFully(raf, index, bytesContent); <span class="comment">// 读取内容；</span>
+
+            <span class="keyword">if</span> (isEncrypt &amp;&amp; password != <span class="keyword">null</span> &amp;&amp; password.length() &gt; <span class="number">0</span>) {
+                bytesContent = decrypt(password, bytesContent);
+            }
+        }
+        raf.close();
+        <span class="keyword">return</span> bytesContent;
+    }
+
+    <span class="comment">/**
+     * 读取数据结构的版本号
+     * <span class="doctag">@param</span> raf RandomAccessFile
+     * <span class="doctag">@return</span> 数组对象，[0] randomAccessFile.seek的index，[1] 数据结构的版本号
+     * <span class="doctag">@throws</span> IOException
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> Object[] getVersion(RandomAccessFile raf) <span class="keyword">throws</span> IOException {
+        String version = <span class="keyword">null</span>;
+        <span class="keyword">byte</span>[] bytesMagic = SIG.getBytes(CHARSET_NAME);
+        <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[bytesMagic.length];
+        <span class="keyword">long</span> index = raf.length();
+        index -= bytesMagic.length;
+        readFully(raf, index, bytes); <span class="comment">// 读取SIG标记；</span>
+        <span class="keyword">if</span> (Arrays.equals(bytes, bytesMagic)) {
+            bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span>];
+            index -= bytes.length;
+            readFully(raf, index, bytes); <span class="comment">// 读取版本号长度；</span>
+            <span class="keyword">int</span> lengthVersion = stream2Short(bytes, <span class="number">0</span>);
+            index -= lengthVersion;
+            <span class="keyword">byte</span>[] bytesVersion = <span class="keyword">new</span> <span class="keyword">byte</span>[lengthVersion];
+            readFully(raf, index, bytesVersion); <span class="comment">// 读取内容；</span>
+            version = <span class="keyword">new</span> String(bytesVersion, CHARSET_NAME);
+        }
+        <span class="keyword">return</span> <span class="keyword">new</span> Object[] { index, version };
+    }
+
+    <span class="comment">/**
+     * RandomAccessFile seek and readFully
+     * <span class="doctag">@param</span> raf
+     * <span class="doctag">@param</span> index
+     * <span class="doctag">@param</span> buffer
+     * <span class="doctag">@throws</span> IOException
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">readFully</span><span class="params">(RandomAccessFile raf, <span class="keyword">long</span> index, <span class="keyword">byte</span>[] buffer)</span> <span class="keyword">throws</span> IOException </span>{
+        raf.seek(index);
+        raf.readFully(buffer);
+    }
+
+    <span class="comment">/**
+     * 读取数据（如：渠道号）
+     * <span class="doctag">@param</span> path 文件路径
+     * <span class="doctag">@param</span> password 解密密钥
+     * <span class="doctag">@return</span> 被该工具写入的数据（如：渠道号）
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function">String <span class="title">readContent</span><span class="params">(File path, String password)</span> </span>{
+        <span class="keyword">try</span> {
+            <span class="keyword">return</span> <span class="keyword">new</span> String(read(path, password), CHARSET_NAME);
+        } <span class="keyword">catch</span> (Exception ignore) {
+        }
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+
+    <span class="comment">/**
+     * Android平台读取渠道号
+     * <span class="doctag">@param</span> context Android中的android.content.Context对象
+     * <span class="doctag">@param</span> mcptoolPassword mcptool解密密钥
+     * <span class="doctag">@param</span> defValue 读取不到时用该值作为默认值
+     * <span class="doctag">@return</span>
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function">String <span class="title">getChannelId</span><span class="params">(Object context, String mcptoolPassword, String defValue)</span> </span>{
+        String content = MCPTool.readContent(<span class="keyword">new</span> File(getPackageCodePath(context)), mcptoolPassword);
+        <span class="keyword">return</span> content == <span class="keyword">null</span> || content.length() == <span class="number">0</span> ? defValue : content;
+    }
+
+    <span class="comment">/**
+     * 获取已安装apk文件的存储路径（这里使用反射，因为MCPTool项目本身不需要导入Android的运行库）
+     * <span class="doctag">@param</span> context Android中的Context对象
+     * <span class="doctag">@return</span>
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function">String <span class="title">getPackageCodePath</span><span class="params">(Object context)</span> </span>{
+        <span class="keyword">try</span> {
+            <span class="keyword">return</span> (String) context.getClass().getMethod(<span class="string">"getPackageCodePath"</span>).invoke(context);
+        } <span class="keyword">catch</span> (Exception ignore) {
+        }
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+
+    <span class="comment">/**
+     * 加密
+     * <span class="doctag">@param</span> password
+     * <span class="doctag">@param</span> content
+     * <span class="doctag">@return</span>
+     * <span class="doctag">@throws</span> Exception
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] encrypt(String password, <span class="keyword">byte</span>[] content) <span class="keyword">throws</span> Exception {
+        <span class="function"><span class="keyword">return</span> <span class="title">cipher</span><span class="params">(Cipher.ENCRYPT_MODE, password, content)</span></span>;
+    }
+
+    <span class="comment">/**
+     * 解密
+     * <span class="doctag">@param</span> password
+     * <span class="doctag">@param</span> content
+     * <span class="doctag">@return</span>
+     * <span class="doctag">@throws</span> Exception
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] decrypt(String password, <span class="keyword">byte</span>[] content) <span class="keyword">throws</span> Exception {
+        <span class="function"><span class="keyword">return</span> <span class="title">cipher</span><span class="params">(Cipher.DECRYPT_MODE, password, content)</span></span>;
+    }
+
+    <span class="comment">/**
+     * 加解密
+     * <span class="doctag">@param</span> cipherMode
+     * <span class="doctag">@param</span> password
+     * <span class="doctag">@param</span> content
+     * <span class="doctag">@return</span>
+     * <span class="doctag">@throws</span> Exception
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] cipher(<span class="keyword">int</span> cipherMode, String password, <span class="keyword">byte</span>[] content) <span class="keyword">throws</span> Exception {
+        DESKeySpec dks = <span class="keyword">new</span> DESKeySpec(password.getBytes(CHARSET_NAME));
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(<span class="string">"DES"</span>);
+        Key secretKey = keyFactory.generateSecret(dks);
+        Cipher cipher = Cipher.getInstance(<span class="string">"DES/CBC/PKCS5Padding"</span>);
+        IvParameterSpec spec = <span class="keyword">new</span> IvParameterSpec(IV);
+        cipher.init(cipherMode, secretKey, spec);
+        <span class="function"><span class="keyword">return</span> cipher.<span class="title">doFinal</span><span class="params">(content)</span></span>;
+    }
+
+    <span class="comment">/**
+     * short转换成字节数组（小端序）
+     * <span class="doctag">@param</span> data
+     * <span class="doctag">@return</span>
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function"><span class="keyword">short</span> <span class="title">stream2Short</span><span class="params">(<span class="keyword">byte</span>[] stream, <span class="keyword">int</span> offset)</span> </span>{
+        ByteBuffer buffer = ByteBuffer.allocate(<span class="number">2</span>);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(stream[offset]);
+        buffer.put(stream[offset + <span class="number">1</span>]);
+        <span class="function"><span class="keyword">return</span> buffer.<span class="title">getShort</span><span class="params">(<span class="number">0</span>)</span></span>;
+    }
+
+    <span class="comment">/**
+     * 字节数组转换成short（小端序）
+     * <span class="doctag">@param</span> stream
+     * <span class="doctag">@param</span> offset
+     * <span class="doctag">@return</span>
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] short2Stream(<span class="keyword">short</span> data) {
+        ByteBuffer buffer = ByteBuffer.allocate(<span class="number">2</span>);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(data);
+        buffer.flip();
+        <span class="function"><span class="keyword">return</span> buffer.<span class="title">array</span><span class="params">()</span></span>;
+    }
+
+    <span class="comment">/**
+     * nio高速拷贝文件
+     * <span class="doctag">@param</span> source
+     * <span class="doctag">@param</span> target
+     * <span class="doctag">@return</span>
+     * <span class="doctag">@throws</span> IOException
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function"><span class="keyword">boolean</span> <span class="title">nioTransferCopy</span><span class="params">(File source, File <span class="keyword">target</span>)</span> <span class="keyword">throws</span> IOException </span>{
+        FileChannel in = <span class="keyword">null</span>;
+        FileChannel out = <span class="keyword">null</span>;
+        FileInputStream inStream = <span class="keyword">null</span>;
+        FileOutputStream outStream = <span class="keyword">null</span>;
+        <span class="keyword">try</span> {
+            File parent = <span class="keyword">target</span>.getParentFile();
+            <span class="keyword">if</span> (!parent.exists()) {
+                parent.mkdirs();
+            }
+            inStream = <span class="keyword">new</span> FileInputStream(source);
+            outStream = <span class="keyword">new</span> FileOutputStream(<span class="keyword">target</span>);
+            in = inStream.getChannel();
+            out = outStream.getChannel();
+            <span class="keyword">return</span> in.transferTo(<span class="number">0</span>, in.size(), out) == in.size();
+        } <span class="keyword">finally</span> {
+            close(inStream);
+            close(in);
+            close(outStream);
+            close(out);
+        }
+    }
+
+    <span class="comment">/**
+     * 关闭数据流
+     * <span class="doctag">@param</span> closeable
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">close</span><span class="params">(Closeable closeable)</span> </span>{
+        <span class="keyword">if</span> (closeable != <span class="keyword">null</span>) {
+            <span class="keyword">try</span> {
+                closeable.close();
+            } <span class="keyword">catch</span> (IOException ignore) {
+            }
+        }
+    }
+
+<span class="comment">//    /**</span>
+<span class="comment">//     * 简单测试代码段</span>
+<span class="comment">//     * @param args</span>
+<span class="comment">//     * @throws Exception</span>
+<span class="comment">//     */</span>
+<span class="comment">//    public static void test() throws Exception {</span>
+<span class="comment">//        String content = "abc";</span>
+<span class="comment">//        String password = "123456789";</span>
+<span class="comment">//        System.out.println("content = " + content);</span>
+<span class="comment">//        String contentE = new String(encrypt(password, content.getBytes(CHARSET_NAME)), CHARSET_NAME);</span>
+<span class="comment">//        System.out.println("contentE = " + contentE);</span>
+<span class="comment">//        String contentD = new String(decrypt(password, contentE.getBytes(CHARSET_NAME)), CHARSET_NAME);</span>
+<span class="comment">//        System.out.println("contentD = " + contentD);</span>
+<span class="comment">//        </span>
+<span class="comment">//    }</span>
+
+    <span class="comment">/**
+     * jar命令行的入口方法
+     * <span class="doctag">@param</span> args
+     * <span class="doctag">@throws</span> Exception
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>{
+<span class="comment">//        args = "-path D:/111.apk -outdir D:/111/ -contents googleplay;m360; -password 12345678".split(" ");</span>
+<span class="comment">//        args = "-version".split(" ");</span>
+<span class="comment">//        args = "-path D:/111_m360.apk -password 12345678".split(" ");</span>
+
+        <span class="keyword">long</span> time = System.currentTimeMillis();
+        String cmdPath  = <span class="string">"-path"</span>;
+        String cmdOutdir  = <span class="string">"-outdir"</span>;
+        String cmdContents  = <span class="string">"-contents"</span>;
+        String cmdPassword  = <span class="string">"-password"</span>;
+        String cmdVersion  = <span class="string">"-version"</span>;
+        String help = <span class="string">"用法：java -jar MCPTool.jar ["</span> + cmdPath + <span class="string">"] [arg0] ["</span> + cmdOutdir + <span class="string">"] [arg1] ["</span> + cmdContents + <span class="string">"] [arg2] ["</span> + cmdPassword + <span class="string">"] [arg3]"</span>
+                + <span class="string">"\n"</span> + cmdPath + <span class="string">"        APK文件路径"</span>
+                + <span class="string">"\n"</span> + cmdOutdir + <span class="string">"        输出路径（可选），默认输出到APK文件同一级目录"</span>
+                + <span class="string">"\n"</span> + cmdContents + <span class="string">"    写入内容集合，多个内容之间用“;”分割（linux平台请在“;”前加“\\”转义符），如：googleplay;m360; 当没有"</span> + cmdContents + <span class="string">"”参数时输出已有文件中的contents"</span>
+                + <span class="string">"\n"</span> + cmdPassword + <span class="string">"    加密密钥（可选），长度8位以上，如果没有该参数，不加密"</span>
+                + <span class="string">"\n"</span> + cmdVersion + <span class="string">"    显示MCPTool版本号"</span>
+                + <span class="string">"\n例如："</span>
+                + <span class="string">"\n写入：java -jar MCPTool.jar -path D:/test.apk -outdir ./ -contents googleplay;m360; -password 12345678"</span>
+                + <span class="string">"\n读取：java -jar MCPTool.jar -path D:/test.apk -password 12345678"</span>;
+
+        <span class="keyword">if</span> (args.length == <span class="number">0</span> || args[<span class="number">0</span>] == <span class="keyword">null</span> || args[<span class="number">0</span>].trim().length() == <span class="number">0</span>) {
+            System.out.println(help);
+        } <span class="keyword">else</span> {
+            <span class="keyword">if</span> (args.length &gt; <span class="number">0</span>) {
+                <span class="keyword">if</span> (args.length == <span class="number">1</span> &amp;&amp; cmdVersion.equals(args[<span class="number">0</span>])) {
+                    System.out.println(<span class="string">"version: "</span> + VERSION_1_1);
+                } <span class="keyword">else</span> {
+                    Map&lt;String, String&gt; argsMap = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();
+                    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; args.length; i += <span class="number">2</span>) {
+                        <span class="keyword">if</span> (i + <span class="number">1</span> &lt; args.length) {
+                            <span class="keyword">if</span> (args[i + <span class="number">1</span>].startsWith(<span class="string">"-"</span>)) {
+                                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"args is error, help: \n"</span> + help);
+                            } <span class="keyword">else</span> {
+                                argsMap.put(args[i], args[i + <span class="number">1</span>]);
+                            }
+                        }
+                    }
+                    System.out.println(<span class="string">"argsMap = "</span> + argsMap);
+                    File path = argsMap.containsKey(cmdPath) ? <span class="keyword">new</span> File(argsMap.get(cmdPath)) : <span class="keyword">null</span>;
+                    String parent = path == <span class="keyword">null</span>? <span class="keyword">null</span> : (path.getParent() == <span class="keyword">null</span> ? <span class="string">"./"</span> : path.getParent());
+                    File outdir = parent == <span class="keyword">null</span> ? <span class="keyword">null</span> : <span class="keyword">new</span> File(argsMap.containsKey(cmdOutdir) ? argsMap.<span class="keyword">get</span>(cmdOutdir) : parent);
+                    String[] contents = argsMap.containsKey(cmdContents) ? argsMap.get(cmdContents).split(<span class="string">";"</span>) : <span class="keyword">null</span>;
+                    String password = argsMap.get(cmdPassword);
+                    <span class="keyword">if</span> (path != <span class="keyword">null</span>) {
+                        System.out.println(<span class="string">"path: "</span> + path);
+                        System.out.println(<span class="string">"outdir: "</span> + outdir);
+                        <span class="keyword">if</span> (contents != <span class="keyword">null</span> &amp;&amp; contents.length &gt; <span class="number">0</span>) {
+                            System.out.println(<span class="string">"contents: "</span> + Arrays.toString(contents));
+                        }
+                        System.out.println(<span class="string">"password: "</span> + password);
+                        <span class="keyword">if</span> (contents == <span class="keyword">null</span> || contents.length == <span class="number">0</span>) { <span class="comment">// 读取数据；</span>
+                            System.out.println(<span class="string">"content: "</span> + readContent(path, password));
+                        } <span class="keyword">else</span> { <span class="comment">// 写入数据；</span>
+                            String fileName = path.getName();
+                            <span class="keyword">int</span> dot = fileName.lastIndexOf(<span class="string">"."</span>);
+                            String prefix = fileName.substring(<span class="number">0</span>, dot);
+                            String suffix = fileName.substring(dot);
+                            <span class="keyword">for</span> (String content : contents) {
+                                File <span class="keyword">target</span> = <span class="keyword">new</span> File(outdir, prefix + <span class="string">"_"</span> + content + suffix);
+                                <span class="keyword">if</span> (nioTransferCopy(path, <span class="keyword">target</span>)) {
+                                    write(<span class="keyword">target</span>, content, password);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println(<span class="string">"time："</span> + (System.currentTimeMillis() - time));
+    }
+}
+</code></pre>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/webview-optimum/" rel="next" title="WebView优化之路">
+                <i class="fa fa-chevron-left"></i> WebView优化之路
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/jenkins-config-for-android/" rel="prev" title="使用jenkins自动化构建android应用">
+                使用jenkins自动化构建android应用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="multi-channel-build/"
+           data-title="Android多渠道打包方案探究" data-url="http://ihgoo.github.io/multi-channel-build/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍几种方法的利弊"><span class="nav-number">2.</span> <span class="nav-text">介绍几种方法的利弊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理探究"><span class="nav-number">3.</span> <span class="nav-text">原理探究</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现"><span class="nav-number">4.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

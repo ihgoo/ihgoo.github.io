@@ -1,0 +1,800 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="安装Jenkinshttps://jenkins-ci.org/
+这里环境是centos的，使用包管理yum可以直接安装：
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo  
+
+sudo rpm --import http://pkg.jenkins-ci.org/re">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用jenkins自动化构建android应用">
+<meta property="og:url" content="http://ihgoo.github.io/jenkins-config-for-android/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="安装Jenkinshttps://jenkins-ci.org/
+这里环境是centos的，使用包管理yum可以直接安装：
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo  
+
+sudo rpm --import http://pkg.jenkins-ci.org/re">
+<meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/jenkins01.png">
+<meta property="og:updated_time" content="2016-01-28T03:15:26.219Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用jenkins自动化构建android应用">
+<meta name="twitter:description" content="安装Jenkinshttps://jenkins-ci.org/
+这里环境是centos的，使用包管理yum可以直接安装：
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo  
+
+sudo rpm --import http://pkg.jenkins-ci.org/re">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 使用jenkins自动化构建android应用 | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用jenkins自动化构建android应用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-01-27T13:29:39+08:00" content="Jan 27 2016">
+              Jan 27 2016
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/jenkins-config-for-android/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="jenkins-config-for-android/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="安装Jenkins">安装Jenkins</h3><p><a href="https://jenkins-ci.org/" target="_blank" rel="external">https://jenkins-ci.org/</a></p>
+<p>这里环境是centos的，使用包管理yum可以直接安装：</p>
+<pre><code>sudo wget -O /etc/yum<span class="class">.repos</span><span class="class">.d</span>/jenkins<span class="class">.repo</span> http:<span class="comment">//pkg.jenkins-ci.org/redhat/jenkins.repo  </span>
+
+sudo rpm --import http:<span class="comment">//pkg.jenkins-ci.org/redhat/jenkins-ci.org.key  </span>
+
+sudo yum install jenkins  
+
+rpm -ql jenkins  
+</code></pre><h3 id="启动jenkins">启动jenkins</h3><pre><code>sudo /sbin/<span class="keyword">service</span> jenkins <span class="literal">start</span>  
+</code></pre><h3 id="构建需要的工具">构建需要的工具</h3><p>构建工具-gradle<br>版本控制-svn<br>sdk<br>jdk</p>
+<h3 id="配置环境变量">配置环境变量</h3><p>待整理…</p>
+<h3 id="新建job">新建job</h3><p>jenkins主页面，新建，选择 构建一个自由风格的软件项目，填写好你的item名称。</p>
+<h3 id="参数化构建过程添加参数">参数化构建过程添加参数</h3><p>选中参数化构建过程选择框，添加一个String类型的参数(String Parameter)，填写上名字，默认值，描述~<br>下面是我shell脚本中用到的参数~</p>
+<p>String参数 名字 URL_PREFIX 默认值 <a href="http://192.168.1.208:8080" target="_blank" rel="external">http://192.168.1.208:8080</a><br>String参数 名字 SVN_TRUNK 默认值 svn工程地址<br>String参数 名字 RELEASE_VERSION 默认值 版本号<br>String参数 名字 SVN_TAG 默认值 svn工程tag地址</p>
+<h3 id="配置shell脚本">配置shell脚本</h3><pre><code><span class="built_in">echo</span> <span class="variable">$JOB_NAME</span>
+<span class="built_in">echo</span> <span class="string">"~~~~~~~~~~~~~~~~~~~~~~~~~[<span class="variable">$JOB_NAME</span>]  test job~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"</span>
+RELEASE_NUM=`svn list <span class="variable">$SVN_TAG</span>/release-<span class="variable">$RELEASE_VERSION</span>|wc <span class="operator">-l</span>`
+<span class="keyword">if</span> <span class="built_in">test</span> <span class="variable">$RELEASE_NUM</span> <span class="operator">-gt</span> <span class="number">0</span> 
+<span class="keyword">then</span>
+    <span class="built_in">echo</span> <span class="string">"VERSION[<span class="variable">$RELEASE_VERSION</span>] is exits on svn Repository"</span>;
+    <span class="built_in">exit</span> <span class="number">1</span>;
+<span class="keyword">fi</span>
+svn copy <span class="variable">$SVN_TRUNK</span> <span class="variable">$SVN_TAG</span>/release-<span class="variable">$RELEASE_VERSION</span> -m <span class="string">"<span class="variable">$RELEASE_VERSION</span> released"</span>
+<span class="built_in">cd</span> <span class="variable">$WORKSPACE</span>
+SVN_COUNT=`ll ./release-<span class="variable">$RELEASE_VERSION</span>|wc <span class="operator">-l</span>`
+<span class="keyword">if</span> <span class="built_in">test</span> <span class="variable">$SVN_COUNT</span> <span class="operator">-gt</span> <span class="number">1</span> 
+<span class="keyword">then</span>
+    <span class="built_in">echo</span> <span class="string">"svn updateing"</span>
+    <span class="built_in">cd</span> ./release-<span class="variable">${RELEASE_VERSION}</span>
+    svn up
+    <span class="built_in">cd</span> ..
+<span class="keyword">else</span>
+    <span class="built_in">echo</span> <span class="string">"svn checkouting"</span>
+    svn checkout <span class="variable">${SVN_TAG}</span>/release-<span class="variable">${RELEASE_VERSION}</span> --username hukaijun --password xxxx
+<span class="keyword">fi</span>
+<span class="built_in">cd</span> ./release-<span class="variable">${RELEASE_VERSION}</span>
+<span class="built_in">echo</span> <span class="string">"start gradle clean"</span>
+gradle clean
+<span class="built_in">echo</span> <span class="string">"end gradle celan"</span>
+<span class="built_in">echo</span> <span class="string">"start gradle build"</span>
+gradle build
+<span class="built_in">echo</span> <span class="string">"end gradle build"</span>
+mkdir -p <span class="variable">$TARGET_PATH</span>/<span class="variable">$JOB_NAME</span>/release-<span class="variable">$RELEASE_VERSION</span>
+cp -r app/build/outputs <span class="variable">$TARGET_PATH</span>/<span class="variable">$JOB_NAME</span>/release-<span class="variable">$RELEASE_VERSION</span>
+</code></pre><h3 id="构建常见问题">构建常见问题</h3><pre><code><span class="code">    -----------------------------------------------------------------------</span>
+注意!  你的密码，对于认证域:
+
+<span class="code">   &lt;svn://192.168.1.199:3690&gt; My First Repository</span>
+
+只能明文保存在磁盘上!  如果可能的话，请考虑配置你的系统，让 Subversion
+可以保存加密后的密码。请参阅文档以获得详细信息。
+
+你可以通过在“/root/.subversion/servers”中设置选项“store-plaintext-passwords”为“yes”或“no”，
+<span class="header">来避免再次出现此警告。
+-----------------------------------------------------------------------</span>
+保存未加密的密码(yes/no)?svn: 无法读取标准输入: End of file found
+</code></pre><p>构建时候 Console Output会出现以上字样，连接上ssh，随便check out一个文件，</p>
+<pre><code><span class="comment">svn</span> <span class="comment">checkout</span> <span class="comment">svn位置</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">username</span> <span class="comment">这是名称</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">password</span> <span class="comment">这是密码</span>
+</code></pre><p><img src="http://7oxim7.com1.z0.glb.clouddn.com/jenkins01.png" alt=""></p>
+<p>如图所示，输入yes~，再到jenkins里构建就可以了~</p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/multi-channel-build/" rel="next" title="Android多渠道打包方案探究">
+                <i class="fa fa-chevron-left"></i> Android多渠道打包方案探究
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="jenkins-config-for-android/"
+           data-title="使用jenkins自动化构建android应用" data-url="http://ihgoo.github.io/jenkins-config-for-android/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Jenkins"><span class="nav-number">1.</span> <span class="nav-text">安装Jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动jenkins"><span class="nav-number">2.</span> <span class="nav-text">启动jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建需要的工具"><span class="nav-number">3.</span> <span class="nav-text">构建需要的工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置环境变量"><span class="nav-number">4.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建job"><span class="nav-number">5.</span> <span class="nav-text">新建job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数化构建过程添加参数"><span class="nav-number">6.</span> <span class="nav-text">参数化构建过程添加参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置shell脚本"><span class="nav-number">7.</span> <span class="nav-text">配置shell脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建常见问题"><span class="nav-number">8.</span> <span class="nav-text">构建常见问题</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

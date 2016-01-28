@@ -1,0 +1,886 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="简介官方网站：http://www.ejabberd.im/ejabberd 是 Jabber/XMPP 协议的即时通讯服务器，使用 GPLv2许可（自由和开放源码） ，基于 erlang/otp 开发。其它特性还包括， 跨平台，容错， clusterable和模块化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ejabberd安装配置">
+<meta property="og:url" content="http://ihgoo.github.io/ejabberd-1/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="简介官方网站：http://www.ejabberd.im/ejabberd 是 Jabber/XMPP 协议的即时通讯服务器，使用 GPLv2许可（自由和开放源码） ，基于 erlang/otp 开发。其它特性还包括， 跨平台，容错， clusterable和模块化。">
+<meta property="og:updated_time" content="2015-05-26T00:32:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ejabberd安装配置">
+<meta name="twitter:description" content="简介官方网站：http://www.ejabberd.im/ejabberd 是 Jabber/XMPP 协议的即时通讯服务器，使用 GPLv2许可（自由和开放源码） ，基于 erlang/otp 开发。其它特性还包括， 跨平台，容错， clusterable和模块化。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> ejabberd安装配置 | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ejabberd安装配置
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-28T11:09:54+08:00" content="Apr 28 2015">
+              Apr 28 2015
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/XMPP/" itemprop="url" rel="index">
+                    <span itemprop="name">XMPP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/ejabberd-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="ejabberd-1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简介">简介</h2><p>官方网站：<a href="http://www.ejabberd.im/" target="_blank" rel="external">http://www.ejabberd.im/</a><br>ejabberd 是 Jabber/XMPP 协议的即时通讯服务器，使用 GPLv2许可（自由和开放源码） ，基于 erlang/otp 开发。其它特性还包括， 跨平台，容错， clusterable和模块化。</p>
+<a id="more"></a>
+<h2 id="下载&amp;安装">下载&amp;安装</h2><p>这里是debain6 64位的系统，所以下载对应的</p>
+<pre><code>wget <span class="keyword">https</span>://www.<span class="built_in">process</span>-<span class="constant">one</span>.net/downloads/ejabberd/<span class="number">15.04</span>/ejabberd-<span class="number">15.04</span>-linux-x86_64-installer.run
+</code></pre><p>arm架构的可以下载这个</p>
+<pre><code>wget <span class="keyword">https</span>://www.<span class="built_in">process</span>-<span class="constant">one</span>.net/downloads/downloads-action.php?<span class="built_in">file</span>=/ejabberd/<span class="number">15.04</span>/ejabberd-<span class="number">15.04</span>-linux-armhf-installer.run
+</code></pre><p>下载完成后需提权，否则无法运行安装包</p>
+<pre><code><span class="tag">chmod</span> 777 <span class="tag">ejabberd-15</span><span class="class">.04-linux-x86_64-installer</span><span class="class">.run</span>
+</code></pre><p>安装</p>
+<pre><code>./ejabberd-<span class="number">15.04</span>-linux-x86_64-installer.<span class="command">run</span>
+</code></pre><p>一路next，设置服务器域，设置管理员帐号及密码，集群配置，节点名称等。</p>
+<p>将/opt/ejabberd-15.03/bin配置到环境变量中(/etc/profile)</p>
+<p>支持以下命令：</p>
+<pre><code><span class="attribute">Usage</span>: <span class="string">ejabberdctl [--node nodename] [--auth user host password] command [options]</span>
+
+<span class="applescript">       backup <span class="type">file</span>
+             Store <span class="keyword">the</span> database <span class="keyword">to</span> backup <span class="type">file</span>
+
+       connected_users
+             List all established sessions
+
+       connected_users_number
+             Get <span class="keyword">the</span> <span class="type">number</span> <span class="keyword">of</span> established sessions
+
+       convert_to_yaml <span class="keyword">in</span> out
+             Convert <span class="keyword">the</span> input <span class="type">file</span> <span class="keyword">from</span> Erlang <span class="keyword">to</span> YAML format
+
+       delete_expired_messages
+             Delete expired offline messages <span class="keyword">from</span> database
+
+       delete_old_messages days
+             Delete offline messages older than DAYS
+
+       dump <span class="type">file</span>
+             Dump <span class="keyword">the</span> database <span class="keyword">to</span> <span class="type">text</span> <span class="type">file</span>
+
+       dump_table <span class="type">file</span> table
+             Dump a table <span class="keyword">to</span> <span class="type">text</span> <span class="type">file</span>
+
+       export2odbc host directory
+             Export virtual host information <span class="keyword">from</span> Mnesia tables <span class="keyword">to</span> SQL files
+
+       export_odbc host <span class="type">file</span>
+             Export all tables <span class="keyword">as</span> SQL queries <span class="keyword">to</span> a <span class="type">file</span>
+
+       export_piefxis dir
+             Export data <span class="keyword">of</span> all users <span class="keyword">in</span> <span class="keyword">the</span> server <span class="keyword">to</span> PIEFXIS files (XEP-<span class="number">0227</span>)
+
+       export_piefxis_host dir host
+             Export data <span class="keyword">of</span> users <span class="keyword">in</span> a host <span class="keyword">to</span> PIEFXIS files (XEP-<span class="number">0227</span>)
+
+       get_loglevel
+             Get <span class="keyword">the</span> current loglevel
+
+       help [<span class="comment">--tags [tag] | com?*]</span>
+             Show help (<span class="keyword">try</span>: ejabberdctl help help)
+
+       import_dir <span class="type">file</span>
+             Import users data <span class="keyword">from</span> jabberd14 spool dir
+
+       import_file <span class="type">file</span>
+             Import user data <span class="keyword">from</span> jabberd14 spool <span class="type">file</span>
+
+       import_piefxis <span class="type">file</span>
+             Import users data <span class="keyword">from</span> a PIEFXIS <span class="type">file</span> (XEP-<span class="number">0227</span>)
+
+       incoming_s2s_number
+             Number <span class="keyword">of</span> incoming s2s connections <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> node
+
+       install_fallback <span class="type">file</span>
+             Install <span class="keyword">the</span> database <span class="keyword">from</span> a fallback <span class="type">file</span>
+
+       kick_user user host
+             Disconnect user's active sessions
+
+       load <span class="type">file</span>
+             Restore <span class="keyword">the</span> database <span class="keyword">from</span> <span class="type">text</span> <span class="type">file</span>
+
+       mnesia [info]
+             show information <span class="keyword">of</span> Mnesia system
+
+       mnesia_change_nodename oldnodename newnodename oldbackup newbackup
+             Change <span class="keyword">the</span> erlang node <span class="property">name</span> <span class="keyword">in</span> a backup <span class="type">file</span>
+
+       module_check module
+
+
+       module_install module
+
+
+       module_uninstall module
+
+
+       module_upgrade module
+
+
+       modules_available
+
+
+       modules_installed
+
+
+       modules_update_specs
+
+
+       outgoing_s2s_number
+             Number <span class="keyword">of</span> outgoing s2s connections <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> node
+
+       register user host password
+             Register a user
+
+       registered_users host
+             List all registered users <span class="keyword">in</span> HOST
+
+       registered_vhosts
+             List all registered vhosts <span class="keyword">in</span> SERVER
+
+       reload_config
+             Reload ejabberd configuration <span class="type">file</span> <span class="keyword">into</span> memory
+
+       rename_default_nodeplugin
+             Update PubSub table <span class="keyword">from</span> old ejabberd trunk SVN <span class="keyword">to</span> <span class="number">2.1</span>.0
+
+       reopen_log
+             Reopen <span class="keyword">the</span> <span class="command">log</span> files
+
+       restart
+             Restart ejabberd
+
+       restore <span class="type">file</span>
+             Restore <span class="keyword">the</span> database <span class="keyword">from</span> backup <span class="type">file</span>
+
+       set_master nodename
+             Set master node <span class="keyword">of</span> <span class="keyword">the</span> clustered Mnesia tables
+
+       status
+             Get ejabberd status
+
+       stop
+             Stop ejabberd
+
+       stop_kindly <span class="command">delay</span> announcement
+             Inform users <span class="keyword">and</span> rooms, wait, <span class="keyword">and</span> stop <span class="keyword">the</span> server
+
+       unregister user host
+             Unregister a user
+
+       update module
+             Update <span class="keyword">the</span> <span class="keyword">given</span> module, <span class="keyword">or</span> use <span class="keyword">the</span> keyword: all
+
+       update_list
+             List modified modules <span class="keyword">that</span> can be updated
+
+       user_resources user host
+             List user's connected resources</span>
+</code></pre><p>浏览器输入 域名:5280/admin 进入ejabberd管理页面。简单的安装已经完成了。</p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/python-pip/" rel="next" title="Python-pip源">
+                <i class="fa fa-chevron-left"></i> Python-pip源
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/animation/" rel="prev" title="Android动画之属性动画">
+                Android动画之属性动画 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="ejabberd-1/"
+           data-title="ejabberd安装配置" data-url="http://ihgoo.github.io/ejabberd-1/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载&安装"><span class="nav-number">2.</span> <span class="nav-text">下载&安装</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

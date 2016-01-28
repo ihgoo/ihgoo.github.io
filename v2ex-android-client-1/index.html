@@ -1,0 +1,851 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="前言由于逛V2EX比较多，决定用闲暇时间做一个安卓客户端,开源在这里 https://github.com/ihgoo/V2EX
+工欲善其事，必先利其器，整个项目以Gradle方式构建，Androidstudio开发。公司的项目也转向AndroidStudio了，studio有个我特别喜欢的特性，输入变量的时候 记不住变量开头是怎么拼写的，能记住后面也会自动提示出来！还有就是插件多，开发向傻瓜化发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="V2EX论坛客户端之帖子信息爬取(一)">
+<meta property="og:url" content="http://ihgoo.github.io/v2ex-android-client-1/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="前言由于逛V2EX比较多，决定用闲暇时间做一个安卓客户端,开源在这里 https://github.com/ihgoo/V2EX
+工欲善其事，必先利其器，整个项目以Gradle方式构建，Androidstudio开发。公司的项目也转向AndroidStudio了，studio有个我特别喜欢的特性，输入变量的时候 记不住变量开头是怎么拼写的，能记住后面也会自动提示出来！还有就是插件多，开发向傻瓜化发">
+<meta property="og:image" content="https://github.com/avast/android-butterknife-zelezny/raw/master/img/zelezny_animated.gif">
+<meta property="og:image" content="http://ihgoo.qiniudn.com/CB99A173-56B4-4B7E-9375-CAAF49288689.png">
+<meta property="og:updated_time" content="2015-08-16T05:54:35.530Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="V2EX论坛客户端之帖子信息爬取(一)">
+<meta name="twitter:description" content="前言由于逛V2EX比较多，决定用闲暇时间做一个安卓客户端,开源在这里 https://github.com/ihgoo/V2EX
+工欲善其事，必先利其器，整个项目以Gradle方式构建，Androidstudio开发。公司的项目也转向AndroidStudio了，studio有个我特别喜欢的特性，输入变量的时候 记不住变量开头是怎么拼写的，能记住后面也会自动提示出来！还有就是插件多，开发向傻瓜化发">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> V2EX论坛客户端之帖子信息爬取(一) | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                V2EX论坛客户端之帖子信息爬取(一)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-05-24T11:47:28+08:00" content="May 24 2015">
+              May 24 2015
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/v2ex-android-client-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="v2ex-android-client-1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2><p>由于逛V2EX比较多，决定用闲暇时间做一个安卓客户端,开源在这里 <a href="https://github.com/ihgoo/V2EX" target="_blank" rel="external">https://github.com/ihgoo/V2EX</a></p>
+<p>工欲善其事，必先利其器，整个项目以Gradle方式构建，Androidstudio开发。<br>公司的项目也转向AndroidStudio了，studio有个我特别喜欢的特性，输入变量的时候 记不住变量开头是怎么拼写的，能记住后面也会自动提示出来！还有就是插件多，开发向傻瓜化发展，只关注业务逻辑即可。<br> <a id="more"></a></p>
+<h2 id="按照业务分模块">按照业务分模块</h2><p>论坛客户端按照业务逻辑会分为以下模块</p>
+<ul>
+<li><p>在非登录状态下的浏览模块</p>
+<ul>
+<li>帖子列表浏览</li>
+<li>帖子详情浏览</li>
+</ul>
+</li>
+<li><p>用户模块</p>
+<ul>
+<li>登录模块</li>
+<li>用户信息模块</li>
+</ul>
+</li>
+<li><p>在登录状态下的模块</p>
+<ul>
+<li>带登录状态的回帖，帖子详情浏览</li>
+<li>收藏，点赞</li>
+<li>回帖提醒</li>
+</ul>
+</li>
+</ul>
+<h2 id="依赖">依赖</h2><p>依赖库会尽量考虑使用原生控件以及成熟的框架</p>
+<pre><code><span class="keyword">compile</span> <span class="string">'com.jakewharton:butterknife:6.1.0'</span>    
+<span class="keyword">compile</span> <span class="string">'com.squareup.retrofit:retrofit:1.9.0'</span>
+<span class="keyword">compile</span> <span class="string">'com.squareup:otto:+'</span>
+<span class="keyword">compile</span> <span class="string">'com.facebook.fresco:fresco:0.1.0+'</span>
+<span class="keyword">compile</span> <span class="string">'com.squareup.okhttp:okhttp-urlconnection:2.0.0'</span>
+<span class="keyword">compile</span> <span class="string">'com.squareup.okhttp:okhttp:2.0.0'</span>
+</code></pre><p>butterknife：jack大神写的Ioc框架，媲美dagger，在idea/studio上面有支持butterknife的插件，一键findviewbyid！<br><img src="https://github.com/avast/android-butterknife-zelezny/raw/master/img/zelezny_animated.gif" alt="ezelezny_animated"></p>
+<p>retrofit: 强大的网络请求库。</p>
+<p>fresco: 加载图片库，在使用这个之前，都是使用Imageloader的，刚出没多久的图片库，使用它是因为在项目中会有支持gif和支持图片渐进式显示的需求。</p>
+<p>otto：eventBus框架！解耦神器，有了它，一切都变得简单了起来。</p>
+<h2 id="搭建项目，整理包结构">搭建项目，整理包结构</h2><p>包结构如下图：</p>
+<p><img src="http://ihgoo.qiniudn.com/CB99A173-56B4-4B7E-9375-CAAF49288689.png" alt=""></p>
+<p>app：关于app的application等。<br>client：网络请求的报文头的定义，网络请求库的配置等。<br>core：基础框架，相当于mvc结构中的c，当然这里的c是指Controller<br>model：模型层<br>paser：解析层。无论是json，还是html，都是由此层解析生成实体类的。<br>persistence：放了一些常量类，数据库字段，Intnet请求字段，app配置字段等。<br>ui：视图展示层。<br>utils：一些顺手的工具类</p>
+<p>项目以Gradle构建，app作为一个module，其他module作为挂载的形式挂到app上，优点是其他module可快速替换，且源码可修改（aar形式导入源码不可修改）。</p>
+<h2 id="关于API">关于API</h2><p>由于调用官方json api有调用次数限制，于是考虑采用解析html页面来做。<br>电脑端html太过于庞大，为了省电降低app占用资源，解析的是wap端的页面，<br>可以通过修改请求头里的UA字段伪装成手机浏览器，在这里我用的是</p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApiHeaders</span> <span class="keyword">implements</span> <span class="title">RequestInterceptor</span> </span>{
+    <span class="keyword">private</span> String sessionId;
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSessionId</span><span class="params">(String sessionId)</span> </span>{
+        <span class="keyword">this</span>.sessionId = sessionId;
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clearSessionId</span><span class="params">()</span> </span>{
+        sessionId = <span class="keyword">null</span>;
+    }
+
+    <span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">intercept</span><span class="params">(RequestFacade request)</span> </span>{
+        request.addHeader(<span class="string">"User-Agent"</span>, <span class="string">"Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19"</span>);
+        request.addHeader(<span class="string">"Accept"</span>, <span class="string">"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"</span>);
+        <span class="keyword">if</span> (sessionId != <span class="keyword">null</span>) {
+        }
+    }
+}
+</code></pre><p>解析html，java里可以用一个叫做jsoup的库，媲美python中的pyquery，支持类Jqery选择器方式来抓取自己想要的资源，简单方便粗暴极了。<br>唯一的缺点就是如果页面里有些元素是ajax形式形成的，那这个就抓瞎了，可以使用httpunit，不过httpunit存在性能问题，要启动一个浏览器内核来运行这个网页，网页上的js完成后，再抓取信息。</p>
+<h2 id="解析帖子列表">解析帖子列表</h2><p>在帖子列表中需要关注解析这几个数据</p>
+<ul>
+<li>avatar 作者头像</li>
+<li>node    节点名称</li>
+<li>title 标题</li>
+<li>small fade (time) 发表时间</li>
+<li>small fade author 作者名称</li>
+<li><p>count_livid 回帖数<br>以下是用jsoup解析的代码，解析成功后塞到ForumItemBean这个实体类中，以集合形式返回给listView的adapter中</p>
+<pre><code>public class PaserFourmList {
+
+    public static ArrayList&lt;ForumItemBean&gt; paser2ForumItem<span class="params">(String string)</span> {
+        Document document = Jsoup.parse<span class="params">(string)</span>;
+        Elements elements = document.select<span class="params">(<span class="string">".cell"</span>)</span>.select<span class="params">(<span class="string">".item"</span>)</span>;
+        ArrayList&lt;ForumItemBean&gt; list = new ArrayList&lt;&gt;<span class="params">()</span>;
+        <span class="keyword">for</span> <span class="params">(Element element : elements)</span> {
+            <span class="comment">// avatar</span>
+            <span class="comment">// node</span>
+            <span class="comment">// title</span>
+            <span class="comment">// small fade (time)</span>
+            <span class="comment">// small fade author</span>
+            <span class="comment">// count_livid</span>
+            String avatar = element.select<span class="params">(<span class="string">".avatar"</span>)</span>.first<span class="params">()</span>.attr<span class="params">(<span class="string">"src"</span>)</span>;
+            String node = element.select<span class="params">(<span class="string">".node"</span>)</span>.first<span class="params">()</span>.html<span class="params">()</span>;
+            String username = element.select<span class="params">(<span class="string">".small &gt; strong"</span>)</span>.first<span class="params">()</span>.<span class="built_in">text</span><span class="params">()</span>;
+            String countLivid = element.getElementsByClass<span class="params">(<span class="string">"count_livid"</span>)</span>.<span class="built_in">text</span><span class="params">()</span>;
+            String time = element.select<span class="params">(<span class="string">".small"</span>)</span>.select<span class="params">(<span class="string">".fade"</span>)</span>.get<span class="params">(<span class="number">1</span>)</span>.<span class="built_in">text</span><span class="params">()</span>;
+
+            String href = element.getElementsByClass<span class="params">(<span class="string">"item_title"</span>)</span>.html<span class="params">()</span>;
+            <span class="keyword">if</span> <span class="params">(href.length<span class="params">()</span>!=<span class="number">0</span>)</span>{
+                href = href.substring<span class="params">(<span class="number">12</span>, href.indexOf<span class="params">(<span class="string">"#"</span>)</span>)</span>;
+            }
+
+            int indexOf = time.indexOf<span class="params">(<span class="string">"前"</span>)</span>;
+            <span class="keyword">if</span> <span class="params">(indexOf != -<span class="number">1</span>)</span> {
+                time = time.substring<span class="params">(<span class="number">0</span>, indexOf)</span>;
+            }
+
+            ForumItemBean forumItemBean = new ForumItemBean<span class="params">()</span>;
+            Member member = new Member<span class="params">()</span>;
+            member.setAvatarMini<span class="params">(avatar)</span>;
+            member.setUsername<span class="params">(username)</span>;
+            forumItemBean.setId<span class="params">(Misc.parseInt<span class="params">(href, <span class="number">0</span>)</span>)</span>;
+            forumItemBean.setMember<span class="params">(member)</span>;
+            forumItemBean.setLastTime<span class="params">(time)</span>;
+            forumItemBean.setReplies<span class="params">(Misc.parseInt<span class="params">(countLivid, <span class="number">0</span>)</span>)</span>;
+            forumItemBean.setTitle<span class="params">(element.select<span class="params">(<span class="string">".item_title"</span>)</span>.first<span class="params">()</span>.select<span class="params">(<span class="string">"[href]"</span>)</span>.html<span class="params">()</span>)</span>;
+            list.add<span class="params">(forumItemBean)</span>;
+        }
+        return list;
+
+    }
+
+}
+</code></pre></li>
+</ul>
+<h2 id="使用Jsoup遇到的坑">使用Jsoup遇到的坑</h2><p>在用jsoup的时候 &lt;#div class=”content type”&gt;像这种class带空格的，需要使用 element.select(“.content”).select(“.type”)，才可以成功解析，使用element.select(“.content type”)是解析不出来的！</p>
+<p>还有  #&lt;#div class=”content-type”&gt; ，这种的，使用element.select(“.content-type”)也解析不出来，需要用element.getElementsByClass(“content-type”)才可以。</p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/animation/" rel="next" title="Android动画之属性动画">
+                <i class="fa fa-chevron-left"></i> Android动画之属性动画
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/java-thread-pool/" rel="prev" title="介绍Java中的四种线程池">
+                介绍Java中的四种线程池 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="v2ex-android-client-1/"
+           data-title="V2EX论坛客户端之帖子信息爬取(一)" data-url="http://ihgoo.github.io/v2ex-android-client-1/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#按照业务分模块"><span class="nav-number">2.</span> <span class="nav-text">按照业务分模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#依赖"><span class="nav-number">3.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建项目，整理包结构"><span class="nav-number">4.</span> <span class="nav-text">搭建项目，整理包结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于API"><span class="nav-number">5.</span> <span class="nav-text">关于API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析帖子列表"><span class="nav-number">6.</span> <span class="nav-text">解析帖子列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Jsoup遇到的坑"><span class="nav-number">7.</span> <span class="nav-text">使用Jsoup遇到的坑</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

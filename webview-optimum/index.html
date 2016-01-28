@@ -1,0 +1,828 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="前言随着app的迭代，嵌入的html5界面越来越多了，WebView这个强大组件引起的问题越发的多起来">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebView优化之路">
+<meta property="og:url" content="http://ihgoo.github.io/webview-optimum/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="前言随着app的迭代，嵌入的html5界面越来越多了，WebView这个强大组件引起的问题越发的多起来">
+<meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/webview_problem.png">
+<meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/wechat2x.png">
+<meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/scheme.png">
+<meta property="og:updated_time" content="2016-01-19T10:20:21.095Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WebView优化之路">
+<meta name="twitter:description" content="前言随着app的迭代，嵌入的html5界面越来越多了，WebView这个强大组件引起的问题越发的多起来">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> WebView优化之路 | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                WebView优化之路
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-01-19T17:00:35+08:00" content="Jan 19 2016">
+              Jan 19 2016
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/webview-optimum/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="webview-optimum/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言">前言</h3><p>随着app的迭代，嵌入的html5界面越来越多了，WebView这个强大组件引起的问题越发的多起来<a id="more"></a>，例如：</p>
+<p>1、WebView导致的oom问题</p>
+<p>2、Android版本不同，采用了不同的内核，兼容性crash</p>
+<p>3、不同版本实现不同，甚至URI不规范也会引起不同程度的问题</p>
+<p><img src="http://7oxim7.com1.z0.glb.clouddn.com/webview_problem.png" alt=""></p>
+<p>为了解决以上问题，我们把WebView模块做成独立进程</p>
+<h3 id="WebView独立进程">WebView独立进程</h3><p>Android允许一个app同时存在多个进程，可以根据需要把不同的模块放到不同进程中处理。</p>
+<p><img src="http://7oxim7.com1.z0.glb.clouddn.com/wechat2x.png" alt=""></p>
+<p>比如微信v2.X+版本的时候把Network部分做轻重进程分离，独立到一个单独的进程（：push）中，而上面两个层级依然跑在微信的主进程(:workder)中。而对于有内存泄露问题的webview或者其他不频繁使用的功能，再把其分离到独立的工具进程（:tools）中。通过分离进程，微信第一次重构解决了系统因为微信资源消耗，主动干掉微信服务的困境。</p>
+<h3 id="WebView独立进程的好处">WebView独立进程的好处</h3><ul>
+<li>有效增大App的运存，减少由webview引起的内存泄露对主进程内存的占用。</li>
+<li>避免WebView的Crash影响App主进程的运行。</li>
+<li>拥有对WebView独立进程操控权。</li>
+</ul>
+<h3 id="WebView进程与其他进程通讯的方式">WebView进程与其他进程通讯的方式</h3><p>把webview独立进程之后会发现，埋点功能和接收主进程数据都不正常了，这里就涉及到进程间通讯的问题了;<br>进程通讯无非就是那几种，aidl，messager，content provider，广播;<br>在这里就不再复述了，我是采用广播的方式来做的。</p>
+<h3 id="WebView硬件加速导致页面渲染闪烁">WebView硬件加速导致页面渲染闪烁</h3><p>4.0以上的系统我们开启硬件加速后，WebView渲染页面更加快速，拖动也更加顺滑。但有个副作用就是，当WebView视图被整体遮住一块，然后突然恢复时（比如使用SlideMenu将WebView从侧边滑出来时），这个过渡期会出现白块同时界面闪烁。解决这个问题的方法是在过渡期前将WebView的硬件加速临时关闭，过渡期后再开启，代码如下：</p>
+<pre><code><span class="keyword">if</span> <span class="comment">(Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.HONEYCOMB)</span> {
+    webview.setLayerType<span class="comment">(View.LAYER_TYPE_SOFTWARE, null)</span>;
+}
+</code></pre><h3 id="webview的配置">webview的配置</h3><p>下面贴上我自己的配置代码：</p>
+<pre><code> WebSettings settings = webview.getSettings<span class="params">()</span>;
+settings.setJavaScriptEnabled<span class="params">(<span class="literal">true</span>)</span>;<span class="comment">//启用js</span>
+settings.setJavaScriptCanOpenWindowsAutomatically<span class="params">(<span class="literal">true</span>)</span>;<span class="comment">//js和android交互</span>
+String cacheDirPath = PathCommonDefines.WEBVIEW_CACHE;
+settings.setAppCachePath<span class="params">(cacheDirPath)</span>; <span class="comment">//设置缓存的指定路径</span>
+settings.setAllowFileAccess<span class="params">(<span class="literal">true</span>)</span>; <span class="comment">// 允许访问文件</span>
+settings.setAppCacheEnabled<span class="params">(<span class="literal">true</span>)</span>; <span class="comment">//设置H5的缓存打开,默认关闭</span>
+settings.setUseWideViewPort<span class="params">(<span class="literal">true</span>)</span>;<span class="comment">//设置webview自适应屏幕大小</span>
+settings.setLayoutAlgorithm<span class="params">(WebSettings.LayoutAlgorithm.NARROW_COLUMNS)</span>;<span class="comment">//设置，可能的话使所有列的宽度不超过屏幕宽度</span>
+settings.setLoadWithOverviewMode<span class="params">(<span class="literal">true</span>)</span>;<span class="comment">//设置webview自适应屏幕大小</span>
+settings.setDomStorageEnabled<span class="params">(<span class="literal">true</span>)</span>;<span class="comment">//设置可以使用localStorage</span>
+settings.setSupportZoom<span class="params">(<span class="literal">false</span>)</span>;<span class="comment">//关闭zoom按钮</span>
+settings.setBuiltInZoomControls<span class="params">(<span class="literal">false</span>)</span>;<span class="comment">//关闭zoom</span>
+<span class="keyword">if</span> <span class="params">(Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.HONEYCOMB)</span> {
+    webview.setLayerType<span class="params">(View.LAYER_TYPE_SOFTWARE, null)</span>;
+}
+webview.setWebViewClient<span class="params">(new WebViewClient<span class="params">()</span> {
+    @Override
+    public boolean shouldOverrideUrlLoading<span class="params">(WebView view, String url)</span> {
+        view.loadUrl<span class="params">(url)</span>;
+        return <span class="literal">false</span>;
+    }
+
+
+    @Override
+    public void onLoadResource<span class="params">(WebView view, String url)</span> {
+    }
+
+    @Override
+    public void onPageFinished<span class="params">(WebView view, String url)</span> {
+    }
+})</span>;
+</code></pre><h3 id="html5跳原生界面">html5跳原生界面</h3><p>网页跳原生界面的方法有很多种，比如js调java方法，或者是通过uri scheme啦，也可以通过自己解析url来做。</p>
+<p>在这儿，考虑到兼容性，拦截的是url，并且在清单文件中自定义了scheme~</p>
+<p><img src="http://7oxim7.com1.z0.glb.clouddn.com/scheme.png" alt=""></p>
+<pre><code>webview.setWebViewClient(<span class="keyword">new</span> WebViewClient() {
+
+      <span class="annotation">@Override</span>
+      <span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">shouldOverrideUrlLoading</span><span class="params">(WebView view, String url)</span> </span>{
+          parserURL(url); <span class="comment">//解析url,如果存在有跳转原生界面的url规则，则跳转原生。</span>
+          <span class="function"><span class="keyword">return</span> <span class="keyword">super</span>.<span class="title">shouldOverrideUrlLoading</span><span class="params">(view, url)</span></span>;
+      }
+
+
+      <span class="annotation">@Override</span>
+      <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onPageFinished</span><span class="params">(WebView view, String url)</span> </span>{
+          <span class="keyword">super</span>.onPageFinished(view, url);
+      }
+
+      <span class="annotation">@Override</span>
+      <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onLoadResource</span><span class="params">(WebView view, String url)</span> </span>{
+          <span class="keyword">super</span>.onLoadResource(view, url);
+      }
+  });
+</code></pre><p>清单文件中，声明一下 就可以在自带浏览器通过uri scheme跳到本app页面了，这个activity作为各个页面的分发页面，通过这个界面解析数据决定接下来要跳转哪个页面：</p>
+<pre><code> &lt;activity
+    android:<span class="variable">name=</span><span class="string">".ui.webview.CommWebviewActivity"</span>
+    android:<span class="variable">configChanges=</span><span class="string">"orientation|keyboardHidden|screenSize"</span>
+    android:<span class="variable">process=</span><span class="string">":webview"</span>
+    android:<span class="variable">screenOrientation=</span><span class="string">"portrait"</span>
+    android:<span class="variable">windowSoftInputMode=</span><span class="string">"stateHidden"</span>&gt;
+    &lt;intent-filter&gt;
+        &lt;category android:<span class="variable">name=</span><span class="string">"android.intent.category.BROWSABLE"</span> /&gt;
+        &lt;category android:<span class="variable">name=</span><span class="string">"android.intent.category.DEFAULT"</span> /&gt;
+
+        &lt;action android:<span class="variable">name=</span><span class="string">"android.intent.action.VIEW"</span> /&gt;
+
+        &lt;data
+            android:<span class="variable">host=</span><span class="string">"xxxx.com"</span>
+            android:<span class="variable">scheme=</span><span class="string">"kingp2p"</span> /&gt;
+    &lt;/intent-filter&gt;
+&lt;/activity&gt;
+</code></pre><p>更多关于webview的请单击：</p>
+<p>在WebView捕获用户输入的信息： <a href="http://xunhou.me/webview-1/" target="_blank" rel="external">http://xunhou.me/webview-1/</a></p>
+<p>在WebView中的网页进行加速 <a href="http://xunhou.me/webview-2/" target="_blank" rel="external">http://xunhou.me/webview-2/</a></p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/looper/" rel="next" title="大话Android系统消息分发">
+                <i class="fa fa-chevron-left"></i> 大话Android系统消息分发
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/multi-channel-build/" rel="prev" title="Android多渠道打包方案探究">
+                Android多渠道打包方案探究 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="webview-optimum/"
+           data-title="WebView优化之路" data-url="http://ihgoo.github.io/webview-optimum/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WebView独立进程"><span class="nav-number">2.</span> <span class="nav-text">WebView独立进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WebView独立进程的好处"><span class="nav-number">3.</span> <span class="nav-text">WebView独立进程的好处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WebView进程与其他进程通讯的方式"><span class="nav-number">4.</span> <span class="nav-text">WebView进程与其他进程通讯的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WebView硬件加速导致页面渲染闪烁"><span class="nav-number">5.</span> <span class="nav-text">WebView硬件加速导致页面渲染闪烁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#webview的配置"><span class="nav-number">6.</span> <span class="nav-text">webview的配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#html5跳原生界面"><span class="nav-number">7.</span> <span class="nav-text">html5跳原生界面</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

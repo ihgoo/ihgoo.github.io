@@ -1,0 +1,888 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="Android应用是由消息驱动的，由Looper，Handler，Message实现的消息循环机制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大话Android系统消息分发">
+<meta property="og:url" content="http://ihgoo.github.io/looper/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="Android应用是由消息驱动的，由Looper，Handler，Message实现的消息循环机制。">
+<meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/looper1.jpg">
+<meta property="og:updated_time" content="2016-01-15T07:18:45.620Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大话Android系统消息分发">
+<meta name="twitter:description" content="Android应用是由消息驱动的，由Looper，Handler，Message实现的消息循环机制。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 大话Android系统消息分发 | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                大话Android系统消息分发
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-08-11T11:12:27+08:00" content="Aug 11 2015">
+              Aug 11 2015
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/looper/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="looper/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Android应用是由消息驱动的，由Looper，Handler，Message实现的消息循环机制。<br><a id="more"></a></p>
+<h3 id="主线程中的Looper">主线程中的Looper</h3><p>在谈消息机制之前，先来看一下启动App过程中，主线程是如何绑定Looper的，在Android应用的入口类,ActivityThread中有一个main方法，<br>main方法中，</p>
+<pre><code>public static final void main<span class="params">(String[] args)</span> {
+       SamplingProfilerIntegration.start<span class="params">()</span>;
+
+       Process.setArgV0<span class="params">(<span class="string">"&lt;pre-initialized&gt;"</span>)</span>;
+
+       Looper.prepareMainLooper<span class="params">()</span>;
+
+       ActivityThread thread = new ActivityThread<span class="params">()</span>;
+       thread.attach<span class="params">(<span class="literal">false</span>)</span>;
+
+       Looper.loop<span class="params">()</span>;
+
+       <span class="keyword">if</span> <span class="params">(Process.supportsProcesses<span class="params">()</span>)</span> {
+           throw new RuntimeException<span class="params">(<span class="string">"Main thread loop unexpectedly exited"</span>)</span>;
+       }
+
+       thread.detach<span class="params">()</span>;
+       String name = <span class="params">(thread.mInitialApplication != null)</span>
+           ? thread.mInitialApplication.getPackageName<span class="params">()</span>
+           : <span class="string">"&lt;unknown&gt;"</span>;
+       Slog.i<span class="params">(TAG, <span class="string">"Main thread of "</span> + name + <span class="string">" is now exiting"</span>)</span>;
+   }
+</code></pre><p>先是执行了Looper中的prepareMainLooper方法，先判断该线程中绑定的Looper类的threadLocal是否有值了，如果有值，则会引出 Only one Looper may be created per thread 这个异常。紧接着在主线程中的threadlocal中设置了一个Looper对象。</p>
+<pre><code> <span class="comment">/** Initialize the current thread as a looper.
+  * This gives you a chance to create handlers that then reference
+  * this looper, before actually starting the loop. Be sure to call
+  * {<span class="doctag">@link</span> #loop()} after calling this method, and end it by calling
+  * {<span class="doctag">@link</span> #quit()}.
+  */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="function"><span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> </span>{
+    <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);
+    }
+    sThreadLocal.set(<span class="keyword">new</span> Looper());
+}
+
+<span class="comment">/** Initialize the current thread as a looper, marking it as an application's main 
+ *  looper. The main looper for your application is created by the Android environment,
+ *  so you should never need to call this function yourself.
+ * {<span class="doctag">@link</span> #prepare()}
+ */</span>
+
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="function"><span class="keyword">void</span> <span class="title">prepareMainLooper</span><span class="params">()</span> </span>{
+    prepare();
+    setMainLooper(myLooper());
+    <span class="keyword">if</span> (Process.supportsProcesses()) {
+        myLooper().mQueue.mQuitAllowed = <span class="keyword">false</span>;
+    }
+}
+</code></pre><p>又创建了ActivityThread，Activity就是通过ActivityThread类中的performLaunchActivity方法，通过反射来创建的。创建完Activity之后又执行了attach方法，attach方法对应用做了一些初始化操作。接下来执行Looper.loop，开始了对主线程中消息的轮询处理。<br>以上就是为什么主线程默认绑定了一个Looper，且为什么每个线程的Looper只能存在一个的原因。</p>
+<p>主线程中所有消息都会被发送到Looper中处理，包括Activity的几大生命周期内的方法(oncreate,ondestory,等)<br>Android系统中有个叫Instrumentation的这么个类，在framework层类似于Ioc控制反转的机制来调起Oncreate这个方法的，在这个类中叫callActivityOnCreate方法。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">void</span> callActivityOnCreate(Activity activity, Bundle icicle) {
+       <span class="keyword">if</span> (mWaitingActivities != <span class="keyword">null</span>) {
+           <span class="keyword">synchronized</span> (mSync) {
+               <span class="keyword">final</span> <span class="built_in">int</span> N = mWaitingActivities.<span class="built_in">size</span>();
+               <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;N; i++) {
+                   <span class="keyword">final</span> ActivityWaiter aw = mWaitingActivities.<span class="built_in">get</span>(i);
+                   <span class="keyword">final</span> Intent intent = aw.intent;
+                   <span class="keyword">if</span> (intent.filterEquals(activity.getIntent())) {
+                       aw.activity = activity;
+                       mMessageQueue.addIdleHandler(<span class="keyword">new</span> ActivityGoing(aw));
+                   }
+               }
+           }
+       }
+
+       activity.onCreate(icicle);
+
+       <span class="keyword">if</span> (mActivityMonitors != <span class="keyword">null</span>) {
+           <span class="keyword">synchronized</span> (mSync) {
+               <span class="keyword">final</span> <span class="built_in">int</span> N = mActivityMonitors.<span class="built_in">size</span>();
+               <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;N; i++) {
+                   <span class="keyword">final</span> ActivityMonitor am = mActivityMonitors.<span class="built_in">get</span>(i);
+                   am.<span class="built_in">match</span>(activity, activity, activity.getIntent());
+               }
+           }
+       }
+   }
+</code></pre><p>通常会给activity设置一个xml视图(或者view)，执行了ViewRootImpl.setView方法的时候，有这么几句代码：</p>
+<p>mInputQueue = new InputQueue(mInputChannel);<br>mInputQueueCallback.onInputQueueCreated(mInputQueue);</p>
+<p>大致意思是把输入的事件消息，通过这个管道来通知Looper来处理…（待整理）</p>
+<h3 id="子线程中的Looper">子线程中的Looper</h3><p>在子线程中，使用Looper和在主线程中一样，也需要调用Looper的prepare方法来初始化Looper(主线程也调的这个方法，只不过Android系统帮你调用好了，不需要自己调用)。<br>在子线程中先调用Looper.prepare()方法，讲该线程绑定一个Looper（创建了消息队列等）。之后在调用loop方法，开始了对消息的轮训。</p>
+<h3 id="Looper是怎样处理消息的">Looper是怎样处理消息的</h3><p>Looper中有个方法叫loop，是从消息队列中取消息，处理消息的方法。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>{
+        Looper me = myLooper();
+        MessageQueue queue = me.mQueue;
+        <span class="keyword">while</span> (<span class="keyword">true</span>) {
+            Message msg = queue.next(); <span class="comment">// might block</span>
+            <span class="comment">//if (!me.mRun) {</span>
+            <span class="comment">//    break;</span>
+            <span class="comment">//}</span>
+            <span class="keyword">if</span> (msg != <span class="keyword">null</span>) {
+                <span class="keyword">if</span> (msg.<span class="keyword">target</span> == <span class="keyword">null</span>) {
+                    <span class="comment">// No target is a magic identifier for the quit message.</span>
+                    <span class="keyword">return</span>;
+                }
+                <span class="keyword">if</span> (me.mLogging!= <span class="keyword">null</span>) me.mLogging.println(
+                        <span class="string">"&gt;&gt;&gt;&gt;&gt; Dispatching to "</span> + msg.<span class="keyword">target</span> + <span class="string">" "</span>
+                        + msg.callback + <span class="string">": "</span> + msg.what
+                        );
+                msg.<span class="keyword">target</span>.dispatchMessage(msg);
+                <span class="keyword">if</span> (me.mLogging!= <span class="keyword">null</span>) me.mLogging.println(
+                        <span class="string">"&lt;&lt;&lt;&lt;&lt; Finished to    "</span> + msg.<span class="keyword">target</span> + <span class="string">" "</span>
+                        + msg.callback);    
+                msg.recycle();
+            }
+        }
+    }
+</code></pre><p>上面一段代码首先从MessageQueue中取消息，取消息是阻塞式方法，MessageQueue是个实现FIFO的队列，如果有消息就会从消息队列取出来并处理。如果某个消息处理时间过久(4、5、6秒)，就会出现ANR异常。如果没有消息处理就会一直阻塞着。</p>
+<p>过程如下：<br><img src="http://7oxim7.com1.z0.glb.clouddn.com/looper1.jpg" alt=""> </p>
+<p>这里我以前一直有个疑问，开始我以为在主线程阻塞就会出现ANR异常，那么Looper这里取消息会一直阻塞，没消息了之后这不是就ANR了。后来想通了，是Looper处理某一个消息的时候时间过久才会出现ANR异常，并不是执行阻塞方法才会出现ANR异常。</p>
+<h3 id="Handler是如何把Message分发消息到Looper中处理的">Handler是如何把Message分发消息到Looper中处理的</h3><p>首先来看Handler的无参的构造方法</p>
+<pre><code><span class="comment">/**
+    * Default constructor associates this handler with the queue for the
+    * current thread.
+    *
+    * If there isn't one, this handler won't be able to receive messages.
+    */</span>
+   public Handler<span class="params">()</span> {
+       <span class="keyword">if</span> <span class="params">(FIND_POTENTIAL_LEAKS)</span> {
+           final Class&lt;? extends Handler&gt; klass = getClass<span class="params">()</span>;
+           <span class="keyword">if</span> <span class="params">(<span class="params">(klass.isAnonymousClass<span class="params">()</span> || klass.isMemberClass<span class="params">()</span> || klass.isLocalClass<span class="params">()</span>)</span> &amp;&amp;
+                   <span class="params">(klass.getModifiers<span class="params">()</span> &amp; Modifier.STATIC)</span> == <span class="number">0</span>)</span> {
+               Log.w<span class="params">(TAG, <span class="string">"The following Handler class should be static or leaks might occur: "</span> +
+                   klass.getCanonicalName<span class="params">()</span>)</span>;
+           }
+       }
+
+       mLooper = Looper.myLooper<span class="params">()</span>;
+       <span class="keyword">if</span> <span class="params">(mLooper == null)</span> {
+           throw new RuntimeException<span class="params">(
+               <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>)</span>;
+       }
+       mQueue = mLooper.mQueue;
+       mCallback = null;
+   }
+</code></pre><p>首先通过Looper.my Looper()得到了当前的Looper对象（(Looper)sThreadLocal.get()，是从该线程中的Looper对象取了出来，使用threadlocal设置了之后其他线程是访问不到这个线程looper对象的），如果在当前线程没有创建对应的Looper就会抛出异常。<br>然后从Looper中取出消息队列( mQueue = mLooper.mQueue;)</p>
+<p>通过上面的简单的初始化，那么是loop方法到底是如何接收到的呢</p>
+<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">sendMessageAtTime</span><span class="params">(Message msg, <span class="keyword">long</span> uptimeMillis)</span>
+</span>{
+    <span class="keyword">boolean</span> sent = <span class="keyword">false</span>;
+    MessageQueue queue = mQueue;
+    <span class="keyword">if</span> (queue != <span class="keyword">null</span>) {
+        msg.<span class="keyword">target</span> = <span class="keyword">this</span>;
+        sent = queue.enqueueMessage(msg, uptimeMillis);
+    }
+    <span class="keyword">else</span> {
+        RuntimeException e = <span class="keyword">new</span> RuntimeException(
+            <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);
+        Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);
+    }
+    <span class="keyword">return</span> sent;
+}
+</code></pre><p>调用enqueueMessage方法把消息插入消息队列并且根据执行顺序将消息排队。接着Looper就可以通过loop方法从消息队列取消息一条一条的处理了。</p>
+<p>以上都是自己对Android系统消息分发机制的一些拙见，如果有不正确的地方欢迎大家批评指正。</p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/android-plugin/" rel="next" title="AndroidStudio/Intellj插件整理">
+                <i class="fa fa-chevron-left"></i> AndroidStudio/Intellj插件整理
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/webview-optimum/" rel="prev" title="WebView优化之路">
+                WebView优化之路 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="looper/"
+           data-title="大话Android系统消息分发" data-url="http://ihgoo.github.io/looper/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#主线程中的Looper"><span class="nav-number">1.</span> <span class="nav-text">主线程中的Looper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子线程中的Looper"><span class="nav-number">2.</span> <span class="nav-text">子线程中的Looper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Looper是怎样处理消息的"><span class="nav-number">3.</span> <span class="nav-text">Looper是怎样处理消息的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Handler是如何把Message分发消息到Looper中处理的"><span class="nav-number">4.</span> <span class="nav-text">Handler是如何把Message分发消息到Looper中处理的</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

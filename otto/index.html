@@ -1,0 +1,815 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="介绍Otto是square的一个Event Bus模式的开源类库，事件订阅模式旨在当应用功能越来越多的时候，保证应用的各个部分之间高效通信变的简洁。通过事件订阅模式，应用组件间可以大大减少耦合性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识事件订阅之otto">
+<meta property="og:url" content="http://ihgoo.github.io/otto/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="介绍Otto是square的一个Event Bus模式的开源类库，事件订阅模式旨在当应用功能越来越多的时候，保证应用的各个部分之间高效通信变的简洁。通过事件订阅模式，应用组件间可以大大减少耦合性。">
+<meta property="og:updated_time" content="2015-05-26T00:32:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识事件订阅之otto">
+<meta name="twitter:description" content="介绍Otto是square的一个Event Bus模式的开源类库，事件订阅模式旨在当应用功能越来越多的时候，保证应用的各个部分之间高效通信变的简洁。通过事件订阅模式，应用组件间可以大大减少耦合性。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 初识事件订阅之otto | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                初识事件订阅之otto
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-03-04T11:04:15+08:00" content="Mar 4 2015">
+              Mar 4 2015
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/otto/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="otto/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="介绍">介绍</h3><p><strong>Otto</strong>是square的一个Event Bus模式的开源类库，事件订阅模式旨在当应用功能越来越多的时候，保证应用的各个部分之间高效通信变的简洁。通过事件订阅模式，应用组件间可以大大减少耦合性。<br><a id="more"></a></p>
+<h3 id="配置">配置</h3><p>Otto项目地址在<a href="http://square.github.io/otto/" target="_blank" rel="external">这里</a><br>在这里我以Gradle方式导入</p>
+<pre><code><span class="keyword">dependencies</span> {
+  <span class="keyword">compile</span> <span class="string">'com.squareup:otto:+'</span>
+}
+</code></pre><p>用eclipse也可以直接用jar包，地址在<a href="https://search.maven.org/remote_content?g=com.squareup&amp;a=otto&amp;v=LATEST" target="_blank" rel="external">这里</a></p>
+<h3 id="使用">使用</h3><p>使用场景，我们需要在某界面中接收各个事件，以便更新UI，或者是两个组件之间进行通讯。类似于内容观察者，但又不等同于它，比内容观察者使用简单，耦合性少。</p>
+<p>在这里注册事件Event，告诉它，现在要接收各个事件的更新了。而不需要关注在哪发送的事件更新的通知。</p>
+<pre><code><span class="keyword">bus</span> = <span class="keyword">new</span> <span class="keyword">Bus</span>();
+<span class="keyword">bus</span>.<span class="keyword">register</span>(this);
+</code></pre><p>用@Suscribe注解标记这个方法为可被事件订阅调用的方法，如果发送关于CommentEvent的事件，EventBus就会把所有关于CommentEven的事件发给这个方法。</p>
+<pre><code>@Subscribe
+public void toggleKeyboard<span class="params">(CommentEven event)</span> {
+
+    LogUtils.e<span class="params">(event.getCommentSomeBody<span class="params">()</span>)</span>;
+    mEtSerach.setHint<span class="params">(event.getCommentSomeBody<span class="params">()</span>)</span>;
+    mEtSerach.requestFocus<span class="params">()</span>;
+    mEtSerach.setFocusableInTouchMode<span class="params">(<span class="literal">true</span>)</span>;
+    KeyboardUtil.toggle<span class="params">(this, mEtSerach)</span>;
+    <span class="keyword">if</span> <span class="params">(event.getType<span class="params">()</span>.equals<span class="params">(<span class="string">"1"</span>)</span>)</span>{
+        type = <span class="number">1</span>;
+    }<span class="keyword">else</span> <span class="keyword">if</span><span class="params">(event.getType<span class="params">()</span>.equals<span class="params">(<span class="string">"2"</span>)</span>)</span>{
+        type = <span class="number">2</span>;
+    }
+}
+</code></pre><p>发送关于CommentEven的事件</p>
+<pre><code><span class="annotation">@OnClick</span>(R.id.ll_comment_comment)
+<span class="function"><span class="keyword">void</span> <span class="title">comment</span><span class="params">()</span></span>{
+    CommentEven commentEven = <span class="keyword">new</span> CommentEven(<span class="string">"发表你的评论"</span>,<span class="string">"2"</span>);
+    bus.post(commentEven);
+}
+</code></pre><p>取消订阅</p>
+<pre><code><span class="annotation">@Override</span>
+<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span></span>{
+    <span class="keyword">super</span>.onDestroy();
+    bus.unregister(<span class="keyword">this</span>);
+}
+</code></pre><p>在这儿可以用单例模式创建Eventbus,<a href="https://github.com/bkiers/otto-demo/blob/master/src/main/java/com/askcs/ottodemo/service/ForegroundService.java" target="_blank" rel="external">引用代码</a></p>
+<pre><code>/**
+ * Maintains a singleton<span class="instruction"> instance </span>for obtaining the event bus over
+ * which messages are passed from UI components<span class="function"> (</span>such as Activities
+ *<span class="instruction"> and </span>Fragments<span class="function">)</span> to Services,<span class="instruction"> and </span>back.
+ */<span class="keyword">
+public</span><span class="keyword"> final</span> class BusProvider {
+
+    // The singleton of the Bus<span class="instruction"> instance </span>which can be used from
+    // any thread in the app.
+   <span class="keyword"> private</span><span class="keyword"> static</span><span class="keyword"> final</span> Bus BUS =<span class="instruction"> new </span>Bus(<span class="function">)</span>{
+
+       <span class="keyword"> private</span><span class="keyword"> final</span> Handler mainThread =<span class="instruction"> new </span>Handler(Looper.getMainLooper(<span class="function">)</span><span class="function">)</span>;
+
+        @Override
+       <span class="keyword"> public</span> void<span class="function"> post(</span>final Object event<span class="function">)</span> {
+
+           <span class="instruction"> if </span>(Looper.myLooper(<span class="function">)</span> ==<span class="function"> Looper.getMainLooper(</span><span class="function">)</span><span class="function">)</span> {
+               <span class="function"> super.post(</span>event<span class="function">)</span>;
+            }
+            else {
+               <span class="function"> mainThread.post(</span>new<span class="function"> Runnable(</span><span class="function">)</span> {
+                    @Override
+                   <span class="keyword"> public</span> void<span class="function"> run(</span><span class="function">)</span> {
+                       <span class="function"> post(</span>event<span class="function">)</span>;
+                    }
+                }<span class="function">)</span>;
+            }
+        }
+    };
+
+    /**
+     * Returns a singleton<span class="instruction"> instance </span>for obtaining the event bus over
+     * which messages are passed from UI components to Services,<span class="instruction"> and
+</span>     * back.
+     *
+     * @return a singleton<span class="instruction"> instance </span>for obtaining the event bus over
+     * which messages are passed from UI components to Services,<span class="instruction"> and
+</span>     * back.
+     */
+   <span class="keyword"> public</span><span class="keyword"> static</span> Bus<span class="function"> getBus(</span><span class="function">)</span> {
+       <span class="instruction"> return </span>BUS;
+    }
+
+    // No need to instantiate this class.
+   <span class="keyword"> private</span><span class="function"> BusProvider(</span><span class="function">)</span> {
+    }
+}
+</code></pre>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/python-django-guide-1/" rel="next" title="Python_Django_配置安装">
+                <i class="fa fa-chevron-left"></i> Python_Django_配置安装
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/android-optimization/" rel="prev" title="Android 开发规范及性能优化(一)">
+                Android 开发规范及性能优化(一) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="otto/"
+           data-title="初识事件订阅之otto" data-url="http://ihgoo.github.io/otto/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

@@ -1,0 +1,831 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="训猴" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="创建一个导航抽屉关于抽屉的组件层出不穷，有Slidingmenu，MenuDrawer，FoldingNavigationDrawer(滑动并以折叠方式打开菜单)等等，谷歌也是出了几种抽屉：
+
+SlidingDrawer（在api17的时候过时了）
+DrawerLayout (V4 support包中的控件)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="抽屉效果DrawerLayout~">
+<meta property="og:url" content="http://ihgoo.github.io/v4_support_drawerlayout/index.html">
+<meta property="og:site_name" content="训猴">
+<meta property="og:description" content="创建一个导航抽屉关于抽屉的组件层出不穷，有Slidingmenu，MenuDrawer，FoldingNavigationDrawer(滑动并以折叠方式打开菜单)等等，谷歌也是出了几种抽屉：
+
+SlidingDrawer（在api17的时候过时了）
+DrawerLayout (V4 support包中的控件)">
+<meta property="og:updated_time" content="2015-05-26T00:32:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="抽屉效果DrawerLayout~">
+<meta name="twitter:description" content="创建一个导航抽屉关于抽屉的组件层出不穷，有Slidingmenu，MenuDrawer，FoldingNavigationDrawer(滑动并以折叠方式打开菜单)等等，谷歌也是出了几种抽屉：
+
+SlidingDrawer（在api17的时候过时了）
+DrawerLayout (V4 support包中的控件)">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 抽屉效果DrawerLayout~ | 训猴 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a0abc91336d3684db4a1ead11e33a97e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">训猴</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Android,Blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                抽屉效果DrawerLayout~
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-01-03T22:33:51+08:00" content="Jan 3 2015">
+              Jan 3 2015
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/v4_support_drawerlayout/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="v4_support_drawerlayout/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="创建一个导航抽屉">创建一个导航抽屉</h4><p>关于抽屉的组件层出不穷，有Slidingmenu，MenuDrawer，FoldingNavigationDrawer(滑动并以折叠方式打开菜单)等等，谷歌也是出了几种抽屉：</p>
+<ul>
+<li><a href="http://developer.android.com/reference/android/widget/SlidingDrawer.html" target="_blank" rel="external">SlidingDrawer</a>（在api17的时候过时了）</li>
+<li><a href="http://developer.android.com/reference/android/support/v4/widget/DrawerLayout.html" target="_blank" rel="external">DrawerLayout</a> (V4 support包中的控件)<a id="more"></a></li>
+</ul>
+<pre><code>在决定使用抽屉之前，应该明白导航抽屉的设计原则
+</code></pre><p>这其实是一个梗，在产品经理都不知道抽屉是什么的情况下居然也能在axure上设计出来抽屉出来，只有呵呵两字能表示我此刻的心情了。</p>
+<h4 id="创建抽屉的布局">创建抽屉的布局</h4><p>DrawerLayout有两个子View，一个FrameLayout作为主内容区域，另一部分用ListView作为导航菜单。Layout如下所示：</p>
+<pre><code><span class="tag">&lt;<span class="title">android.support.v4.widget.DrawerLayout</span>
+    <span class="attribute">xmlns:android</span>=<span class="value">"http://schemas.android.com/apk/res/android"</span>
+    <span class="attribute">android:id</span>=<span class="value">"@+id/drawer_layout"</span>
+    <span class="attribute">android:layout_width</span>=<span class="value">"match_parent"</span>
+    <span class="attribute">android:layout_height</span>=<span class="value">"match_parent"</span>&gt;</span>
+    <span class="comment">&lt;!-- The main content view --&gt;</span>
+    <span class="tag">&lt;<span class="title">FrameLayout</span>
+        <span class="attribute">android:id</span>=<span class="value">"@+id/content_frame"</span>
+        <span class="attribute">android:layout_width</span>=<span class="value">"match_parent"</span>
+        <span class="attribute">android:layout_height</span>=<span class="value">"match_parent"</span> /&gt;</span>
+    <span class="comment">&lt;!-- The navigation drawer --&gt;</span>
+    <span class="tag">&lt;<span class="title">ListView</span> <span class="attribute">android:id</span>=<span class="value">"@+id/left_drawer"</span>
+        <span class="attribute">android:layout_width</span>=<span class="value">"240dp"</span>
+        <span class="attribute">android:layout_height</span>=<span class="value">"match_parent"</span>
+        <span class="attribute">android:layout_gravity</span>=<span class="value">"start"</span>
+        <span class="attribute">android:choiceMode</span>=<span class="value">"singleChoice"</span>
+        <span class="attribute">android:divider</span>=<span class="value">"@android:color/transparent"</span>
+        <span class="attribute">android:dividerHeight</span>=<span class="value">"0dp"</span>
+        <span class="attribute">android:background</span>=<span class="value">"#111"</span>/&gt;</span>
+<span class="tag">&lt;/<span class="title">android.support.v4.widget.DrawerLayout</span>&gt;</span>
+</code></pre><p>这里展示了DrawerLayout一些要注意的地方</p>
+<ul>
+<li>主要视图(上面的FrameLayout)，必须作为DrawerLayout第一个孩子，因为在xml中是在布局的最上面的。</li>
+<li>抽屉视图，可以设置layout_gravity：为start或者end(在左边或者右边)。</li>
+</ul>
+<h4 id="初始化抽屉列表">初始化抽屉列表</h4><p>在这儿，activity中，第一件事情就是初始化导航抽屉的item：</p>
+<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Activity</span> {</span>
+    <span class="keyword">private</span> <span class="type">String</span>[] mPlanetTitles;
+    <span class="keyword">private</span> <span class="type">DrawerLayout</span> mDrawerLayout;
+    <span class="keyword">private</span> <span class="type">ListView</span> mDrawerList;
+    ...
+
+    <span class="annotation">@Override</span>
+    public void onCreate(<span class="type">Bundle</span> savedInstanceState) {
+        <span class="keyword">super</span>.onCreate(savedInstanceState);
+        setContentView(<span class="type">R</span>.layout.activity_main);
+
+        mPlanetTitles = getResources().getStringArray(<span class="type">R</span>.array.planets_array);
+        mDrawerLayout = (<span class="type">DrawerLayout</span>) findViewById(<span class="type">R</span>.id.drawer_layout);
+        mDrawerList = (<span class="type">ListView</span>) findViewById(<span class="type">R</span>.id.left_drawer);
+
+        <span class="comment">// Set the adapter for the list view</span>
+        mDrawerList.setAdapter(<span class="keyword">new</span> <span class="type">ArrayAdapter</span>&lt;<span class="type">String</span>&gt;(<span class="keyword">this</span>,
+                <span class="type">R</span>.layout.drawer_list_item, mPlanetTitles));
+        <span class="comment">// Set the list's click listener</span>
+        mDrawerList.setOnItemClickListener(<span class="keyword">new</span> <span class="type">DrawerItemClickListener</span>());
+
+        ...
+    }
+}
+</code></pre><h4 id="处理导航的点击事件">处理导航的点击事件</h4><pre><code><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DrawerItemClickListener</span> <span class="keyword">implements</span> <span class="title">ListView</span>.<span class="title">OnItemClickListener</span> </span>{
+    <span class="annotation">@Override</span>
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onItemClick</span><span class="params">(AdapterView parent, View view, <span class="keyword">int</span> position, <span class="keyword">long</span> id)</span> </span>{
+        selectItem(position);
+    }
+}
+
+<span class="comment">/** Swaps fragments in the main content view */</span>
+<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">selectItem</span><span class="params">(<span class="keyword">int</span> position)</span> </span>{
+    <span class="comment">// Create a new fragment and specify the planet to show based on position</span>
+    Fragment fragment = <span class="keyword">new</span> PlanetFragment();
+    Bundle args = <span class="keyword">new</span> Bundle();
+    args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+    fragment.setArguments(args);
+
+    <span class="comment">// Insert the fragment by replacing any existing fragment</span>
+    FragmentManager fragmentManager = getFragmentManager();
+    fragmentManager.beginTransaction()
+                   .replace(R.id.content_frame, fragment)
+                   .commit();
+
+    <span class="comment">// Highlight the selected item, update the title, and close the drawer</span>
+    mDrawerList.setItemChecked(position, <span class="keyword">true</span>);
+    setTitle(mPlanetTitles[position]);
+    mDrawerLayout.closeDrawer(mDrawerList);
+}
+
+<span class="annotation">@Override</span>
+<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTitle</span><span class="params">(CharSequence title)</span> </span>{
+    mTitle = title;
+    getActionBar().setTitle(mTitle);
+}
+</code></pre><h4 id="监听抽屉的开关事件">监听抽屉的开关事件</h4><p>可以调用setDrawerListener()来监听抽屉的开和关。</p>
+<h4 id="TRY_IT_OUT">TRY IT OUT</h4><p><a href="http://developer.android.com/shareables/training/NavigationDrawer.zip" target="_blank" rel="external">Download the sample app</a></p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/viewgroup-onintercepttouchevent/" rel="next" title="ViewGroup的事件分发">
+                <i class="fa fa-chevron-left"></i> ViewGroup的事件分发
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/tesseract-1/" rel="prev" title="Tesseract-OCR 简单入门（一）">
+                Tesseract-OCR 简单入门（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="v4_support_drawerlayout/"
+           data-title="抽屉效果DrawerLayout~" data-url="http://ihgoo.github.io/v4_support_drawerlayout/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://tp4.sinaimg.cn/2525239883/180/5718255326/1"
+               alt="训猴" />
+          <p class="site-author-name" itemprop="name">训猴</p>
+          <p class="site-description motion-element" itemprop="description">Life is short,play more.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            
+              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-name">标签</span>
+              
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ihgoo" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.weibo.com/2525239883" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建一个导航抽屉"><span class="nav-number">1.</span> <span class="nav-text">创建一个导航抽屉</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建抽屉的布局"><span class="nav-number">2.</span> <span class="nav-text">创建抽屉的布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化抽屉列表"><span class="nav-number">3.</span> <span class="nav-text">初始化抽屉列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#处理导航的点击事件"><span class="nav-number">4.</span> <span class="nav-text">处理导航的点击事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#监听抽屉的开关事件"><span class="nav-number">5.</span> <span class="nav-text">监听抽屉的开关事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TRY_IT_OUT"><span class="nav-number">6.</span> <span class="nav-text">TRY IT OUT</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">训猴</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ihgoo"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
