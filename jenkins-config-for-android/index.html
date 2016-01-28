@@ -67,7 +67,7 @@
 <meta property="og:description" content="安装Jenkins">
 <meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/jenkins02.png">
 <meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/jenkins01.png">
-<meta property="og:updated_time" content="2016-01-28T06:08:30.626Z">
+<meta property="og:updated_time" content="2016-01-28T06:10:36.192Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用jenkins自动化构建android应用">
 <meta name="twitter:description" content="安装Jenkins">
@@ -281,8 +281,7 @@ sudo yum install jenkins
 
 rpm -ql jenkins  
 </code></pre><h3 id="启动jenkins">启动jenkins</h3><pre><code>sudo /sbin/<span class="keyword">service</span> jenkins <span class="literal">start</span>  
-</code></pre><h3 id="构建需要的工具">构建需要的工具</h3><p>构建工具-gradle<br>版本控制-svn<br>sdk<br>jdk</p>
-<h3 id="配置环境变量">配置环境变量</h3><p>待整理…</p>
+</code></pre><h3 id="构建需要的工具">构建需要的工具</h3><p>构建工具-gradle<br>版本控制-svn<br>sdk<br>jdk<br>工具安装好之后分别配置上环境变量即可，方便下面shell脚本调用</p>
 <h3 id="新建job">新建job</h3><p>jenkins主页面，新建，选择 构建一个自由风格的软件项目，填写好你的item名称。</p>
 <h3 id="参数化构建过程添加参数">参数化构建过程添加参数</h3><p>选中参数化构建过程选择框，添加一个String类型的参数(String Parameter)，填写上名字，默认值，描述~<br>下面是我shell脚本中用到的参数~</p>
 <p>String参数 名字 URL_PREFIX 默认值 <a href="http://192.168.1.208:8080" target="_blank" rel="external">http://192.168.1.208:8080</a><br>String参数 名字 SVN_TRUNK 默认值 svn工程地址<br>String参数 名字 RELEASE_VERSION 默认值 版本号<br>String参数 名字 SVN_TAG 默认值 svn工程tag地址</p>
@@ -532,7 +531,7 @@ cp -r app/build/outputs <span class="variable">$TARGET_PATH</span>/<span class="
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Jenkins"><span class="nav-number">1.</span> <span class="nav-text">安装Jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动jenkins"><span class="nav-number">2.</span> <span class="nav-text">启动jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建需要的工具"><span class="nav-number">3.</span> <span class="nav-text">构建需要的工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置环境变量"><span class="nav-number">4.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建job"><span class="nav-number">5.</span> <span class="nav-text">新建job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数化构建过程添加参数"><span class="nav-number">6.</span> <span class="nav-text">参数化构建过程添加参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置shell脚本"><span class="nav-number">7.</span> <span class="nav-text">配置shell脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定时构建项目"><span class="nav-number">8.</span> <span class="nav-text">定时构建项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建常见问题"><span class="nav-number">9.</span> <span class="nav-text">构建常见问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">10.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Jenkins"><span class="nav-number">1.</span> <span class="nav-text">安装Jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动jenkins"><span class="nav-number">2.</span> <span class="nav-text">启动jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建需要的工具"><span class="nav-number">3.</span> <span class="nav-text">构建需要的工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建job"><span class="nav-number">4.</span> <span class="nav-text">新建job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数化构建过程添加参数"><span class="nav-number">5.</span> <span class="nav-text">参数化构建过程添加参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置shell脚本"><span class="nav-number">6.</span> <span class="nav-text">配置shell脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定时构建项目"><span class="nav-number">7.</span> <span class="nav-text">定时构建项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建常见问题"><span class="nav-number">8.</span> <span class="nav-text">构建常见问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
