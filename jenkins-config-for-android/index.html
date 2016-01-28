@@ -67,7 +67,7 @@
 <meta property="og:description" content="安装Jenkins">
 <meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/jenkins02.png">
 <meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/jenkins01.png">
-<meta property="og:updated_time" content="2016-01-28T03:55:06.892Z">
+<meta property="og:updated_time" content="2016-01-28T04:12:37.541Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用jenkins自动化构建android应用">
 <meta name="twitter:description" content="安装Jenkins">
@@ -288,6 +288,7 @@ rpm -ql jenkins
 <p>String参数 名字 URL_PREFIX 默认值 <a href="http://192.168.1.208:8080" target="_blank" rel="external">http://192.168.1.208:8080</a><br>String参数 名字 SVN_TRUNK 默认值 svn工程地址<br>String参数 名字 RELEASE_VERSION 默认值 版本号<br>String参数 名字 SVN_TAG 默认值 svn工程tag地址</p>
 <h3 id="配置shell脚本">配置shell脚本</h3><pre><code><span class="built_in">echo</span> <span class="variable">$JOB_NAME</span>
 <span class="built_in">echo</span> <span class="string">"~~~~~~~~~~~~~~~~~~~~~~~~~[<span class="variable">$JOB_NAME</span>]  test job~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"</span>
+<span class="comment">#列举出来当前版本在svn tag中有几个，如果存在当前版本，则退出该脚本...</span>
 RELEASE_NUM=`svn list <span class="variable">$SVN_TAG</span>/release-<span class="variable">$RELEASE_VERSION</span>|wc <span class="operator">-l</span>`
 <span class="keyword">if</span> <span class="built_in">test</span> <span class="variable">$RELEASE_NUM</span> <span class="operator">-gt</span> <span class="number">0</span> 
 <span class="keyword">then</span>
@@ -308,12 +309,16 @@ SVN_COUNT=`ll ./release-<span class="variable">$RELEASE_VERSION</span>|wc <span 
     svn checkout <span class="variable">${SVN_TAG}</span>/release-<span class="variable">${RELEASE_VERSION}</span> --username hukaijun --password xxxx
 <span class="keyword">fi</span>
 <span class="built_in">cd</span> ./release-<span class="variable">${RELEASE_VERSION}</span>
+
+<span class="comment">#准备执行gralde clean任务</span>
 <span class="built_in">echo</span> <span class="string">"start gradle clean"</span>
 gradle clean
 <span class="built_in">echo</span> <span class="string">"end gradle celan"</span>
+<span class="comment">#准备执行gralde构建任务</span>
 <span class="built_in">echo</span> <span class="string">"start gradle build"</span>
 gradle build
 <span class="built_in">echo</span> <span class="string">"end gradle build"</span>
+<span class="comment">#把构建好的apk，挪到其他目录中</span>
 mkdir -p <span class="variable">$TARGET_PATH</span>/<span class="variable">$JOB_NAME</span>/release-<span class="variable">$RELEASE_VERSION</span>
 cp -r app/build/outputs <span class="variable">$TARGET_PATH</span>/<span class="variable">$JOB_NAME</span>/release-<span class="variable">$RELEASE_VERSION</span>
 </code></pre><h3 id="定时构建项目">定时构建项目</h3><p>jenkins可以通过配置你的构建触发器来定时构建任务。</p>
