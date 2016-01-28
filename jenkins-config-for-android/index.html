@@ -59,18 +59,18 @@
 
 
 
-<meta name="description" content="安装Jenkins">
+<meta name="description" content="前言公司测试人员需要在每天早晨拿到最新版本的测试安装包，自己打包需要配置一大堆东西，而且还被墙了，每次都得烦请开发人员打包，有没有一个定时拉去svn中最新的代码并且自动打包的方案呢？于是就想到了用jenkins，持续化集成构建，只要把代码提交到svn中，每天清晨测试人员就可以从局域网下载到最新的安装包~~~~采用ci，无需打断开发人员的思路，又省时省力。方便的很~">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用jenkins自动化构建android应用">
 <meta property="og:url" content="http://ihgoo.github.io/jenkins-config-for-android/index.html">
 <meta property="og:site_name" content="训猴">
-<meta property="og:description" content="安装Jenkins">
+<meta property="og:description" content="前言公司测试人员需要在每天早晨拿到最新版本的测试安装包，自己打包需要配置一大堆东西，而且还被墙了，每次都得烦请开发人员打包，有没有一个定时拉去svn中最新的代码并且自动打包的方案呢？于是就想到了用jenkins，持续化集成构建，只要把代码提交到svn中，每天清晨测试人员就可以从局域网下载到最新的安装包~~~~采用ci，无需打断开发人员的思路，又省时省力。方便的很~">
 <meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/jenkins02.png">
 <meta property="og:image" content="http://7oxim7.com1.z0.glb.clouddn.com/jenkins01.png">
-<meta property="og:updated_time" content="2016-01-28T06:10:36.192Z">
+<meta property="og:updated_time" content="2016-01-28T06:29:03.338Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用jenkins自动化构建android应用">
-<meta name="twitter:description" content="安装Jenkins">
+<meta name="twitter:description" content="前言公司测试人员需要在每天早晨拿到最新版本的测试安装包，自己打包需要配置一大堆东西，而且还被墙了，每次都得烦请开发人员打包，有没有一个定时拉去svn中最新的代码并且自动打包的方案呢？于是就想到了用jenkins，持续化集成构建，只要把代码提交到svn中，每天清晨测试人员就可以从局域网下载到最新的安装包~~~~采用ci，无需打断开发人员的思路，又省时省力。方便的很~">
 
 
 
@@ -270,8 +270,9 @@
       
 
       
-        <h3 id="安装Jenkins">安装Jenkins</h3><a id="more"></a>
-<p><a href="https://jenkins-ci.org/" target="_blank" rel="external">https://jenkins-ci.org/</a></p>
+        <h3 id="前言">前言</h3><p>公司测试人员需要在每天早晨拿到最新版本的测试安装包，自己打包需要配置一大堆东西，而且还被墙了，每次都得烦请开发人员打包，有没有一个定时拉去svn中最新的代码并且自动打包的方案呢？于是就想到了用jenkins，持续化集成构建，只要把代码提交到svn中，每天清晨测试人员就可以从局域网下载到最新的安装包~~~~采用ci，无需打断开发人员的思路，又省时省力。方便的很~</p>
+<a id="more"></a>
+<h3 id="安装Jenkins">安装Jenkins</h3><p><a href="https://jenkins-ci.org/" target="_blank" rel="external">https://jenkins-ci.org/</a></p>
 <p>这里环境是centos的，使用包管理yum可以直接安装：</p>
 <pre><code>sudo wget -O /etc/yum<span class="class">.repos</span><span class="class">.d</span>/jenkins<span class="class">.repo</span> http:<span class="comment">//pkg.jenkins-ci.org/redhat/jenkins.repo  </span>
 
@@ -531,7 +532,7 @@ cp -r app/build/outputs <span class="variable">$TARGET_PATH</span>/<span class="
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Jenkins"><span class="nav-number">1.</span> <span class="nav-text">安装Jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动jenkins"><span class="nav-number">2.</span> <span class="nav-text">启动jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建需要的工具"><span class="nav-number">3.</span> <span class="nav-text">构建需要的工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建job"><span class="nav-number">4.</span> <span class="nav-text">新建job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数化构建过程添加参数"><span class="nav-number">5.</span> <span class="nav-text">参数化构建过程添加参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置shell脚本"><span class="nav-number">6.</span> <span class="nav-text">配置shell脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定时构建项目"><span class="nav-number">7.</span> <span class="nav-text">定时构建项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建常见问题"><span class="nav-number">8.</span> <span class="nav-text">构建常见问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Jenkins"><span class="nav-number">2.</span> <span class="nav-text">安装Jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动jenkins"><span class="nav-number">3.</span> <span class="nav-text">启动jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建需要的工具"><span class="nav-number">4.</span> <span class="nav-text">构建需要的工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建job"><span class="nav-number">5.</span> <span class="nav-text">新建job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数化构建过程添加参数"><span class="nav-number">6.</span> <span class="nav-text">参数化构建过程添加参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置shell脚本"><span class="nav-number">7.</span> <span class="nav-text">配置shell脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定时构建项目"><span class="nav-number">8.</span> <span class="nav-text">定时构建项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建常见问题"><span class="nav-number">9.</span> <span class="nav-text">构建常见问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">10.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
