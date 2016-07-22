@@ -212,209 +212,6 @@
             
               
                 
-                <a class="post-title-link" href="/asynctask/" itemprop="url">
-                  浅析AsyncTask
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2014-10-10T15:13:35+08:00" content="Oct 10 2014">
-              Oct 10 2014
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/asynctask/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="asynctask/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>首先来看AsyncTask这个类，有这么几个方法<br>onCancelled() — 在调用cancel方法后会执行<br>onCancelled(Void result) — 同上<br>onPreExecute() — 在doInBackground之前执行<br>onPostExecute(Void result) — 在doInBackground之后执行<br>onProgressUpdate(Void… values) — 此方法会更新进度，在asnctask执行后会自动执行。<br>doInBackground(Void… params) — 此方法是异步的，耗时的操作都写在此方法中。</p>
-<p>那么问题来了，这些方法的执行顺序是怎样的呢？贴上源码：</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">final</span> AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) {
-    <span class="keyword">if</span> (mStatus != Status.PENDING) {
-        <span class="keyword">switch</span> (mStatus) {
-            <span class="keyword">case</span> RUNNING:
-                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Cannot execute task:"</span>
-                        + <span class="string">" the task is already running."</span>);
-            <span class="keyword">case</span> FINISHED:
-                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Cannot execute task:"</span>
-                        + <span class="string">" the task has already been executed "</span>
-                        + <span class="string">"(a task can be executed only once)"</span>);
-        }
-    }
-
-    mStatus = Status.RUNNING;
-
-    onPreExecute();
-
-    mWorker.mParams = params;
-    sExecutor.execute(mFuture);
-
-    <span class="keyword">return</span> <span class="keyword">this</span>;
-}
-</code></pre><p>首先这个异步任务的状态不能是RUNNING或者FINISHED的，也就是说一个任务有且只能执行一次。然后执行onPreExecute()方法，onPreExecute方法是由你来实现的，在AsyncTask里面其实是一个空实现，之后才把类中的FutureTask执行。看一下这个FutureTask到底是个什么，在AsyncTask的构造方法中就已经确定了</p>
-<pre><code>public <span class="type">AsyncTask</span>() {
-       mWorker = new <span class="type">WorkerRunnable</span>&lt;<span class="type">Params</span>, <span class="type">Result</span>&gt;() {
-           public <span class="type">Result</span> call() throws <span class="type">Exception</span> {
-               <span class="type">Process</span>.setThreadPriority(<span class="type">Process</span>.<span class="type">THREAD_PRIORITY_BACKGROUND</span>);
-               <span class="keyword">return</span> doInBackground(mParams);
-           }
-       };
-
-       mFuture = new <span class="type">FutureTask</span>&lt;<span class="type">Result</span>&gt;(mWorker) {
-           @<span class="type">Override</span>
-           protected <span class="type">void</span> done() {
-               <span class="type">Message</span> message;
-               <span class="type">Result</span> <span class="literal">result</span> = null;
-
-               <span class="keyword">try</span> {
-                   <span class="literal">result</span> = get();
-               } catch (<span class="type">InterruptedException</span> e) {
-                   android.util.<span class="type">Log</span>.w(<span class="type">LOG_TAG</span>, e);
-               } catch (<span class="type">ExecutionException</span> e) {
-                   throw new <span class="type">RuntimeException</span>(<span class="string">"An error occured while executing doInBackground()"</span>,
-                           e.getCause());
-               } catch (<span class="type">CancellationException</span> e) {
-                   message = sHandler.obtainMessage(<span class="type">MESSAGE_POST_CANCEL</span>,
-                           new <span class="type">AsyncTaskResult</span>&lt;<span class="type">Result</span>&gt;(<span class="type">AsyncTask</span>.this, (<span class="type">Result</span>[]) null));
-                   message.sendToTarget();
-                   <span class="keyword">return</span>;
-               } catch (<span class="type">Throwable</span> t) {
-                   throw new <span class="type">RuntimeException</span>(<span class="string">"An error occured while executing "</span>
-                           + <span class="string">"doInBackground()"</span>, t);
-               }
-
-               message = sHandler.obtainMessage(<span class="type">MESSAGE_POST_RESULT</span>,
-                       new <span class="type">AsyncTaskResult</span>&lt;<span class="type">Result</span>&gt;(<span class="type">AsyncTask</span>.this, <span class="literal">result</span>));
-               message.sendToTarget();
-           }
-       };
-   }
-</code></pre><p>在上面构造方法中看到了FutureTask就是在这里new的，而mWorker作为FutureTask的参数传进去，addWork方法就会把这个runnable放入工作队列中，发现run方法中会调用传递进来的Callable类型的call方法，并将这个方法的返回值result在调用set方法设置一下，同时会调用done方法。</p>
-<pre><code>message = sHandler.obtainMessage(<span class="type">MESSAGE_POST_RESULT</span>,
-                       new <span class="type">AsyncTaskResult</span>&lt;<span class="type">Result</span>&gt;(<span class="type">AsyncTask</span>.this, <span class="literal">result</span>));
-               message.sendToTarget();
-</code></pre><p> 在AsyncTask中也有一个Handler来处理这些消息，</p>
-<pre><code>private <span class="keyword">static</span> class <span class="type">InternalHandler</span> extends <span class="type">Handler</span> {
-      @<span class="type">SuppressWarnings</span>({<span class="string">"unchecked"</span>, <span class="string">"RawUseOfParameterizedType"</span>})
-      @<span class="type">Override</span>
-      public <span class="type">void</span> handleMessage(<span class="type">Message</span> msg) {
-          <span class="type">AsyncTaskResult</span> <span class="literal">result</span> = (<span class="type">AsyncTaskResult</span>) msg.obj;
-          switch (msg.what) {
-              <span class="keyword">case</span> <span class="type">MESSAGE_POST_RESULT</span>:
-                  // <span class="type">There</span> <span class="keyword">is</span> only one <span class="literal">result</span>
-                  <span class="literal">result</span>.mTask.finish(<span class="literal">result</span>.mData[<span class="number">0</span>]);
-                  <span class="keyword">break</span>;
-              <span class="keyword">case</span> <span class="type">MESSAGE_POST_PROGRESS</span>:
-                  <span class="literal">result</span>.mTask.onProgressUpdate(<span class="literal">result</span>.mData);
-                  <span class="keyword">break</span>;
-              <span class="keyword">case</span> <span class="type">MESSAGE_POST_CANCEL</span>:
-                  <span class="literal">result</span>.mTask.onCancelled();
-                  <span class="keyword">break</span>;
-          }
-      }
-  }
-</code></pre><p>上面那个 MESSAGE_POST_RESULT 执行的 result.mTask.finish(result.mData[0]); 代码如下：</p>
-<pre><code>private <span class="type">void</span> finish(<span class="type">Result</span> <span class="literal">result</span>) {
-    <span class="keyword">if</span> (isCancelled()) <span class="literal">result</span> = null;
-    onPostExecute(<span class="literal">result</span>);
-    mStatus = <span class="type">Status</span>.<span class="type">FINISHED</span>;
-}
-</code></pre><p>一切变的简单起来，也就是执行顺序如下所示：</p>
-<p>onPreExecute -&gt; doInBackground -&gt; onPostExecute</p>
-
-          
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/actionbar-pulltorefresh1/" itemprop="url">
                   Actionbar-PullTorRefresh的使用
                 </a>
@@ -849,6 +646,125 @@
 
 
     
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/xutils-1/" itemprop="url">
+                  xutils框架源码分析(一)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2014-10-05T14:07:59+08:00" content="Oct 5 2014">
+              Oct 5 2014
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/xutils-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="xutils-1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>国庆闲来无事，公司放假了，在家随便研究研究点东西。</p>
+<p>xutils是github上面功能完善、比较火的开源框架，是基于afinal开发的，比afinal稳定不少，更新也较为频繁。</p>
+<h3 id="目前xutils有四大模块">目前xutils有四大模块</h3><ul>
+<li>BitmapUtils</li>
+<li>DbUtils</li>
+<li>HttpUtils</li>
+<li>ViewUtils</li>
+</ul>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/xutils-1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
 
   </section>
 
@@ -895,7 +811,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">32</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
